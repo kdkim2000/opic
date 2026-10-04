@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # questions.json 생성 + 음원(test/mp3, ansewer/mp3)을 app/audio 로 복사. 외부 패키지 불필요.
+      - name: Build app data
+        run: python tools/build_data.py
+
+      - name: Sanity check
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          app = pathlib.Path("app")
+          d = json.loads((app / "data" / "questions.json").read_text(encoding="utf-8"))
+          qs = [q for s in d["sets"] for g in s["groups"] for q in g["questions"]]
+          missing = [p for q in qs for p in (q["qAudio"], q["aAudio"]) if p and not (app / p).exists()]
+          print(f"sets={len(d['sets'])} questions={len(qs)} missing_audio={len(missing)}")
+          assert qs and not missing, missing[:5]
+          PY
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

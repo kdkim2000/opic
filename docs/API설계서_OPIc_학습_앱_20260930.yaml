@@ -1,0 +1,1629 @@
+openapi: 3.0.3
+info:
+  title: OPIc 학습 앱 API
+  version: 0.1.0
+  description: |
+    유즈케이스 기반 API 설계서 초안.
+    - 기준 문서: 유즈케이스_OPIc_학습_앱_20260930.md, 화면목록_OPIc_학습_앱_20260930.md, 서비스분류_OPIc_학습_앱_20260930.md, 데이터설계서_OPIc_학습_앱_20260930.md
+    - 구현: Next.js Route Handler (/api/v1). 인증은 Supabase Auth JWT.
+    - x-uc: 연계 유즈케이스, x-release: v1.0(MVP) / v1.1 / v2.0
+    - 페이지네이션은 Offset 방식(page 1부터, size 기본 20, 최대 100).
+servers:
+  # TODO: 확인 필요 (배포 도메인 확정 후 교체)
+  - url: http://localhost:3000/api/v1
+    description: 개발 서버
+tags:
+  - name: 인증
+    description: SC-001 회원관리서비스. Supabase Auth 래핑
+  - name: 회원
+    description: SC-001 회원관리서비스 / SC-005 학습관리서비스(통계)
+  - name: 콘텐츠
+    description: SC-002 콘텐츠서비스
+  - name: 답변
+    description: SC-003 답변연습서비스
+  - name: 피드백
+    description: SC-004 AI피드백서비스
+  - name: 모의고사
+    description: SC-003 답변연습서비스 (v1.1)
+  - name: 학습계획
+    description: SC-005 학습관리서비스 (v1.1)
+  - name: 복습
+    description: SC-006 복습서비스 (v2.0)
+  - name: 관리자
+    description: SC-002 콘텐츠서비스 관리자 기능 (v2.0, role=ADMIN)
+security:
+  - bearerAuth: []
+
+paths:
+  # ───────────── 인증 ─────────────
+  /auth/signup:
+    post:
+      tags: [인증]
+      operationId: signUp
+      summary: 회원 가입
+      x-uc: [UC-001]
+      x-release: v1.0
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SignUpRequest' }
+      responses:
+        '201':
+          description: 가입 완료(이메일 인증 메일 발송)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SignUpResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /auth/login:
+    post:
+      tags: [인증]
+      operationId: login
+      summary: 로그인
+      x-uc: [UC-002]
+      x-release: v1.0
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthSession' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: 이메일 미인증 계정
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429': { $ref: '#/components/responses/TooManyRequests' } # TODO: 확인 필요 (로그인 실패 제한 횟수·시간)
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /auth/logout:
+    post:
+      tags: [인증]
+      operationId: logout
+      summary: 로그아웃
+      x-uc: [UC-002]
+      x-release: v1.0
+      responses:
+        '204': { description: 로그아웃 완료 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /auth/password-reset:
+    post:
+      tags: [인증]
+      operationId: requestPasswordReset
+      summary: 비밀번호 재설정 메일 요청
+      description: 계정 존재 여부를 노출하지 않기 위해 항상 202를 반환한다.
+      x-uc: [UC-002]
+      x-release: v1.0
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmailRequest' }
+      responses:
+        '202': { description: 요청 접수 }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /auth/verification-email:
+    post:
+      tags: [인증]
+      operationId: resendVerificationEmail
+      summary: 인증 메일 재발송
+      x-uc: [UC-001, UC-002]
+      x-release: v1.0
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmailRequest' }
+      responses:
+        '202': { description: 요청 접수 }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── 회원 ─────────────
+  /users/me:
+    get:
+      tags: [회원]
+      operationId: getMyProfile
+      summary: 내 프로필 조회
+      x-uc: [UC-002, UC-003]
+      x-release: v1.0
+      responses:
+        '200':
+          description: 내 프로필
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserProfile' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /users/me/profile:
+    put:
+      tags: [회원]
+      operationId: updateMyProfile
+      summary: 학습 프로필 설정·수정
+      x-uc: [UC-003]
+      x-release: v1.0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProfileUpdateRequest' }
+      responses:
+        '200':
+          description: 저장된 프로필
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserProfile' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /users/me/ai-usage:
+    get:
+      tags: [회원]
+      operationId: getMyAiUsage
+      summary: 오늘의 AI 사용량·한도 조회
+      x-uc: [UC-005, UC-006]
+      x-release: v1.0
+      responses:
+        '200':
+          description: 일일 사용량
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AiUsage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /users/me/stats:
+    get:
+      tags: [회원]
+      operationId: getMyStats
+      summary: 진도·성취 통계 조회
+      x-uc: [UC-012]
+      x-release: v1.1
+      parameters:
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: 통계
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudyStats' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── 콘텐츠 ─────────────
+  /topics:
+    get:
+      tags: [콘텐츠]
+      operationId: listTopics
+      summary: 주제 목록 조회
+      x-uc: [UC-003, UC-004]
+      x-release: v1.0
+      responses:
+        '200':
+          description: 주제 목록
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Topic' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /questions:
+    get:
+      tags: [콘텐츠]
+      operationId: listQuestions
+      summary: 질문 검색·조회
+      description: 공개(PUBLISHED) 질문만 반환한다. topicId 미지정 시 프로필 관심 주제를 기본 적용할지는 클라이언트가 결정한다.
+      x-uc: [UC-004]
+      x-release: v1.0
+      parameters:
+        - name: topicId
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: questionType
+          in: query
+          schema: { $ref: '#/components/schemas/QuestionType' }
+        - name: difficulty
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 6 } # TODO: 확인 필요 (난이도 체계)
+        - name: answered
+          in: query
+          description: true=답변한 질문, false=미답변 질문
+          schema: { type: boolean }
+        - name: keyword
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: 질문 목록
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QuestionPage' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /questions/{questionId}:
+    get:
+      tags: [콘텐츠]
+      operationId: getQuestion
+      summary: 질문 상세 조회
+      x-uc: [UC-005]
+      x-release: v1.0
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+      responses:
+        '200':
+          description: 질문 상세
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Question' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /questions/{questionId}/model-answers:
+    get:
+      tags: [콘텐츠]
+      operationId: listModelAnswers
+      summary: 모범 답안 조회
+      x-uc: [UC-007]
+      x-release: v1.0
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - name: targetGrade
+          in: query
+          description: 미지정 시 내 목표 등급 기준
+          schema: { $ref: '#/components/schemas/Grade' }
+      responses:
+        '200':
+          description: 모범 답안 목록(미등록 시 빈 배열)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/ModelAnswer' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── 답변 ─────────────
+  /answers:
+    post:
+      tags: [답변]
+      operationId: submitAnswer
+      summary: 질문 답변 제출
+      description: |
+        음성(audio) 또는 텍스트(text)로 답변을 제출한다. 저장 후 전사(STT)·AI 채점이 비동기로 진행되며
+        진행 상태는 GET /answers/{answerId}의 status로 확인한다. 음성 제출은 음성 수집 동의(voiceConsent)가 필요하다.
+      x-uc: [UC-005, UC-006]
+      x-release: v1.0
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: { $ref: '#/components/schemas/SubmitAnswerRequest' }
+      responses:
+        '201':
+          description: 답변 접수
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Answer' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: 음성 수집 미동의
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '413':
+          description: 녹음 길이/파일 크기 초과 # TODO: 확인 필요 (최대 녹음 시간)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    get:
+      tags: [답변]
+      operationId: listMyAnswers
+      summary: 내 답변 이력 조회
+      x-uc: [UC-006, UC-014]
+      x-release: v1.0
+      parameters:
+        - name: questionId
+          in: query
+          schema: { type: integer, format: int64 }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: 답변 이력
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AnswerPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    delete:
+      tags: [답변]
+      operationId: deleteMyAnswers
+      summary: 답변·녹음 다건/전체 삭제
+      description: ids(선택 삭제) 또는 all=true(전체 삭제) 중 하나를 지정한다. 음성 파일과 전사·피드백이 함께 삭제된다.
+      x-uc: [UC-014]
+      x-release: v1.0
+      parameters:
+        - name: ids
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items: { type: integer, format: int64 }
+        - name: all
+          in: query
+          schema: { type: boolean }
+      responses:
+        '204': { description: 삭제 완료 }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /answers/{answerId}:
+    get:
+      tags: [답변]
+      operationId: getAnswer
+      summary: 답변 상세·처리 상태 조회
+      description: 채점 진행 상태 폴링에 사용한다. 본인 답변만 조회 가능하다.
+      x-uc: [UC-005, UC-006]
+      x-release: v1.0
+      parameters:
+        - $ref: '#/components/parameters/AnswerId'
+      responses:
+        '200':
+          description: 답변 상세
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Answer' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    delete:
+      tags: [답변]
+      operationId: deleteAnswer
+      summary: 답변·녹음 단건 삭제
+      x-uc: [UC-014]
+      x-release: v1.0
+      parameters:
+        - $ref: '#/components/parameters/AnswerId'
+      responses:
+        '204': { description: 삭제 완료 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── 피드백 ─────────────
+  /answers/{answerId}/feedback:
+    get:
+      tags: [피드백]
+      operationId: getFeedback
+      summary: AI 피드백 조회
+      description: 채점 완료 전이면 404를 반환한다(진행 상태는 getAnswer의 status 참조).
+      x-uc: [UC-006, UC-007]
+      x-release: v1.0
+      parameters:
+        - $ref: '#/components/parameters/AnswerId'
+      responses:
+        '200':
+          description: 피드백
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Feedback' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    post:
+      tags: [피드백]
+      operationId: requestFeedback
+      summary: 재채점 요청
+      description: 채점 실패 또는 재답변 후 재채점을 요청한다. 실패 건은 사용 횟수를 차감하지 않는다.
+      x-uc: [UC-006]
+      x-release: v1.0
+      parameters:
+        - $ref: '#/components/parameters/AnswerId'
+      responses:
+        '202': { description: 재채점 접수 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── 모의고사 ─────────────
+  /mock-exams:
+    post:
+      tags: [모의고사]
+      operationId: createMockExam
+      summary: 모의고사 시작(문항 구성)
+      x-uc: [UC-008]
+      x-release: v1.1
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questionCount:
+                  type: integer
+                  description: 미지정 시 기본 구성 # TODO: 확인 필요 (문항 구성 규칙)
+      responses:
+        '201':
+          description: 구성된 모의고사
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MockExam' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    get:
+      tags: [모의고사]
+      operationId: listMockExams
+      summary: 모의고사 이력 조회
+      x-uc: [UC-008]
+      x-release: v1.1
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: 모의고사 목록
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MockExamPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /mock-exams/{examId}:
+    get:
+      tags: [모의고사]
+      operationId: getMockExam
+      summary: 모의고사 상세·결과·이어하기 조회
+      x-uc: [UC-008]
+      x-release: v1.1
+      parameters:
+        - $ref: '#/components/parameters/ExamId'
+      responses:
+        '200':
+          description: 모의고사 상세
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MockExam' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    patch:
+      tags: [모의고사]
+      operationId: updateMockExamStatus
+      summary: 모의고사 종료·중단
+      description: COMPLETED로 변경하면 전 문항 AI 채점과 종합 등급 산정이 시작된다.
+      x-uc: [UC-008]
+      x-release: v1.1
+      parameters:
+        - $ref: '#/components/parameters/ExamId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [COMPLETED, ABANDONED]
+      responses:
+        '200':
+          description: 변경된 모의고사
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MockExam' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /mock-exams/{examId}/items/{examItemId}:
+    patch:
+      tags: [모의고사]
+      operationId: skipMockExamItem
+      summary: 문항 건너뛰기
+      x-uc: [UC-008]
+      x-release: v1.1
+      parameters:
+        - $ref: '#/components/parameters/ExamId'
+        - $ref: '#/components/parameters/ExamItemId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [skipped]
+              properties:
+                skipped: { type: boolean }
+      responses:
+        '200':
+          description: 변경된 문항
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MockExamItem' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /mock-exams/{examId}/items/{examItemId}/answer:
+    post:
+      tags: [모의고사]
+      operationId: submitMockExamAnswer
+      summary: 모의고사 문항 답변 제출
+      description: 채점은 모의고사 종료(updateMockExamStatus) 시 일괄 수행한다.
+      x-uc: [UC-008, UC-005]
+      x-release: v1.1
+      parameters:
+        - $ref: '#/components/parameters/ExamId'
+        - $ref: '#/components/parameters/ExamItemId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: { $ref: '#/components/schemas/SubmitExamAnswerRequest' }
+      responses:
+        '201':
+          description: 답변 접수
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Answer' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: 음성 수집 미동의
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── 학습 계획 ─────────────
+  /study-plans:
+    post:
+      tags: [학습계획]
+      operationId: createStudyPlan
+      summary: 학습 계획 생성(재산정)
+      description: 프로필의 목표 등급·시험일과 학습 이력을 기반으로 계획을 생성한다. 기존 활성 계획은 보관(ARCHIVED) 처리된다.
+      x-uc: [UC-011]
+      x-release: v1.1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                weeklyMinutes:
+                  type: integer
+                  minimum: 10
+                  description: 미입력 시 기본값 적용 # TODO: 확인 필요 (기본값)
+      responses:
+        '201':
+          description: 생성된 계획
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudyPlan' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /study-plans/current:
+    get:
+      tags: [학습계획]
+      operationId: getCurrentStudyPlan
+      summary: 현재 활성 학습 계획 조회
+      x-uc: [UC-011, UC-012]
+      x-release: v1.1
+      responses:
+        '200':
+          description: 활성 계획
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudyPlan' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /study-plans/{planId}/items:
+    post:
+      tags: [학습계획]
+      operationId: addStudyPlanItem
+      summary: 학습 계획 항목 추가
+      x-uc: [UC-011]
+      x-release: v1.1
+      parameters:
+        - $ref: '#/components/parameters/PlanId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [planDate, itemType]
+              properties:
+                planDate: { type: string, format: date }
+                itemType: { $ref: '#/components/schemas/PlanItemType' }
+                questionId: { type: integer, format: int64 }
+      responses:
+        '201':
+          description: 추가된 항목
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudyPlanItem' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /study-plans/{planId}/items/{planItemId}:
+    patch:
+      tags: [학습계획]
+      operationId: updateStudyPlanItem
+      summary: 학습 계획 항목 이동·완료 처리
+      x-uc: [UC-011, UC-012]
+      x-release: v1.1
+      parameters:
+        - $ref: '#/components/parameters/PlanId'
+        - $ref: '#/components/parameters/PlanItemId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planDate: { type: string, format: date }
+                done: { type: boolean }
+      responses:
+        '200':
+          description: 변경된 항목
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudyPlanItem' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    delete:
+      tags: [학습계획]
+      operationId: deleteStudyPlanItem
+      summary: 학습 계획 항목 삭제
+      x-uc: [UC-011]
+      x-release: v1.1
+      parameters:
+        - $ref: '#/components/parameters/PlanId'
+        - $ref: '#/components/parameters/PlanItemId'
+      responses:
+        '204': { description: 삭제 완료 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── 복습 ─────────────
+  /expressions:
+    get:
+      tags: [복습]
+      operationId: listExpressions
+      summary: 핵심 표현 조회
+      x-uc: [UC-009]
+      x-release: v2.0
+      parameters:
+        - name: topicId
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: keyword
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: 표현 목록
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExpressionPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /expression-cards:
+    get:
+      tags: [복습]
+      operationId: listMyExpressionCards
+      summary: 내 표현 카드 조회
+      description: due=true이면 오늘 복습 대상 카드만 반환한다.
+      x-uc: [UC-009, UC-010]
+      x-release: v2.0
+      parameters:
+        - name: due
+          in: query
+          schema: { type: boolean }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: 카드 목록
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExpressionCardPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    post:
+      tags: [복습]
+      operationId: createExpressionCard
+      summary: 표현 카드 저장
+      description: expressionId(콘텐츠 표현에서 저장) 또는 expressionText+meaning(직접 입력) 중 하나로 생성한다.
+      x-uc: [UC-009, UC-007]
+      x-release: v2.0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ExpressionCardCreateRequest' }
+      responses:
+        '201':
+          description: 생성된 카드
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExpressionCard' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /expression-cards/{cardId}:
+    patch:
+      tags: [복습]
+      operationId: updateExpressionCard
+      summary: 표현 카드 수정
+      x-uc: [UC-009]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expressionText: { type: string, maxLength: 300 }
+                meaning: { type: string, maxLength: 500 }
+                memo: { type: string }
+      responses:
+        '200':
+          description: 수정된 카드
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExpressionCard' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    delete:
+      tags: [복습]
+      operationId: deleteExpressionCard
+      summary: 표현 카드 삭제
+      x-uc: [UC-009]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '204': { description: 삭제 완료 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /expression-cards/{cardId}/reviews:
+    post:
+      tags: [복습]
+      operationId: createCardReview
+      summary: 카드 복습 결과 기록
+      description: 기억 정도에 따라 다음 복습 일정(nextReviewAt)이 갱신된 카드를 반환한다.
+      x-uc: [UC-010]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating]
+              properties:
+                rating: { $ref: '#/components/schemas/ReviewRating' }
+      responses:
+        '201':
+          description: 갱신된 카드
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExpressionCard' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── 관리자 ─────────────
+  /admin/questions:
+    get:
+      tags: [관리자]
+      operationId: listAdminQuestions
+      summary: 질문 관리 목록 조회(전체 상태)
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/QuestionStatus' }
+        - name: topicId
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: keyword
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: 질문 목록
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminQuestionPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    post:
+      tags: [관리자]
+      operationId: createQuestion
+      summary: 질문 등록
+      description: 일괄(CSV) 등록은 별도 검토 대상이다. # TODO: 확인 필요
+      x-uc: [UC-013]
+      x-release: v2.0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QuestionUpsertRequest' }
+      responses:
+        '201':
+          description: 등록된 질문
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminQuestion' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /admin/questions/{questionId}:
+    get:
+      tags: [관리자]
+      operationId: getAdminQuestion
+      summary: 질문 상세 조회(비공개 포함)
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+      responses:
+        '200':
+          description: 질문 상세
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminQuestion' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    put:
+      tags: [관리자]
+      operationId: updateQuestion
+      summary: 질문 수정(공개 상태 변경 포함)
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QuestionUpsertRequest' }
+      responses:
+        '200':
+          description: 수정된 질문
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminQuestion' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    delete:
+      tags: [관리자]
+      operationId: deleteQuestion
+      summary: 질문 삭제
+      description: 답변 이력이 있는 질문은 409를 반환하며 비공개(HIDDEN) 처리를 안내한다.
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+      responses:
+        '204': { description: 삭제 완료 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /admin/questions/{questionId}/audio:
+    put:
+      tags: [관리자]
+      operationId: uploadQuestionAudio
+      summary: 질문 음성 파일 업로드
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [audio]
+              properties:
+                audio: { type: string, format: binary }
+      responses:
+        '200':
+          description: 반영된 질문
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminQuestion' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /admin/questions/{questionId}/model-answers/{targetGrade}:
+    put:
+      tags: [관리자]
+      operationId: upsertModelAnswer
+      summary: 모범 답안 등록·수정
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - $ref: '#/components/parameters/TargetGrade'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scriptText]
+              properties:
+                scriptText: { type: string }
+                keyExpressionNote: { type: string }
+      responses:
+        '200':
+          description: 저장된 모범 답안
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModelAnswer' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    delete:
+      tags: [관리자]
+      operationId: deleteModelAnswer
+      summary: 모범 답안 삭제
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/QuestionId'
+        - $ref: '#/components/parameters/TargetGrade'
+      responses:
+        '204': { description: 삭제 완료 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /admin/expressions:
+    post:
+      tags: [관리자]
+      operationId: createExpression
+      summary: 핵심 표현 등록
+      x-uc: [UC-013]
+      x-release: v2.0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ExpressionUpsertRequest' }
+      responses:
+        '201':
+          description: 등록된 표현
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Expression' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /admin/expressions/{expressionId}:
+    put:
+      tags: [관리자]
+      operationId: updateExpression
+      summary: 핵심 표현 수정
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/ExpressionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ExpressionUpsertRequest' }
+      responses:
+        '200':
+          description: 수정된 표현
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Expression' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    delete:
+      tags: [관리자]
+      operationId: deleteExpression
+      summary: 핵심 표현 삭제
+      x-uc: [UC-013]
+      x-release: v2.0
+      parameters:
+        - $ref: '#/components/parameters/ExpressionId'
+      responses:
+        '204': { description: 삭제 완료 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase Auth 액세스 토큰. 관리자 API는 role=ADMIN 필요. # TODO: 확인 필요 (토큰 전달 방식: Authorization 헤더 vs 쿠키 세션)
+
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    Size:
+      name: size
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    QuestionId:
+      name: questionId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    AnswerId:
+      name: answerId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    ExamId:
+      name: examId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    ExamItemId:
+      name: examItemId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    PlanId:
+      name: planId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    PlanItemId:
+      name: planItemId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    CardId:
+      name: cardId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    ExpressionId:
+      name: expressionId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    TargetGrade:
+      name: targetGrade
+      in: path
+      required: true
+      schema: { $ref: '#/components/schemas/Grade' }
+
+  responses:
+    BadRequest:
+      description: 요청 파라미터 오류
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: 인증 토큰 없음/만료
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: 권한 없음
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: 리소스 없음(타인 데이터 접근 포함)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: 상태 충돌(중복, 진행 중 작업 등)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    TooManyRequests:
+      description: 요청 한도 초과(일일 AI 사용 한도 등)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ServerError:
+      description: 서버 내부 오류
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, example: VALIDATION_ERROR }
+        message: { type: string }
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              reason: { type: string }
+
+    PageMeta:
+      type: object
+      required: [page, size, totalCount]
+      properties:
+        page: { type: integer }
+        size: { type: integer }
+        totalCount: { type: integer, format: int64 }
+
+    Grade:
+      type: string
+      enum: [NL, NM, NH, IL, IM1, IM2, IM3, IH, AL]
+    QuestionType:
+      type: string
+      enum: [DESCRIBE, ROUTINE, PAST_EXP, ROLE_PLAY, COMPARE, UNEXPECTED, ISSUE]
+    QuestionStatus:
+      type: string
+      enum: [DRAFT, PUBLISHED, HIDDEN]
+    AnswerType:
+      type: string
+      enum: [VOICE, TEXT]
+    AnswerStatus:
+      type: string
+      enum: [SUBMITTED, TRANSCRIBED, SCORED, FAILED]
+    ExamStatus:
+      type: string
+      enum: [IN_PROGRESS, COMPLETED, ABANDONED]
+    PlanItemType:
+      type: string
+      enum: [QUESTION, MOCK, REVIEW]
+    ReviewRating:
+      type: string
+      enum: [HARD, NORMAL, EASY]
+
+    # ── 인증/회원 ──
+    SignUpRequest:
+      type: object
+      required: [email, password, nickname, termsAgreed]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password, minLength: 8 } # TODO: 확인 필요 (비밀번호 정책)
+        nickname: { type: string, maxLength: 50 }
+        termsAgreed: { type: boolean, description: 이용약관 동의(필수) }
+        voiceConsent: { type: boolean, description: 음성 데이터 수집·이용 동의(음성 답변 이용 시 필요) }
+    SignUpResponse:
+      type: object
+      properties:
+        userId: { type: string, format: uuid }
+        emailVerificationRequired: { type: boolean }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+    EmailRequest:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+    AuthSession:
+      type: object
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        expiresIn: { type: integer, description: 만료까지 초 }
+        profileCompleted:
+          type: boolean
+          description: false이면 학습 프로필 설정 화면으로 이동
+    UserProfile:
+      type: object
+      properties:
+        userId: { type: string, format: uuid }
+        email: { type: string, format: email }
+        nickname: { type: string }
+        role: { type: string, enum: [LEARNER, ADMIN] }
+        targetGrade: { $ref: '#/components/schemas/Grade' }
+        currentGrade: { $ref: '#/components/schemas/Grade' }
+        examDate: { type: string, format: date, nullable: true }
+        topicIds:
+          type: array
+          items: { type: integer, format: int64 }
+        voiceConsent: { type: boolean }
+    ProfileUpdateRequest:
+      type: object
+      required: [targetGrade]
+      properties:
+        targetGrade: { $ref: '#/components/schemas/Grade' }
+        currentGrade: { $ref: '#/components/schemas/Grade' }
+        examDate: { type: string, format: date, nullable: true, description: 과거 날짜 불가 }
+        topicIds:
+          type: array
+          items: { type: integer, format: int64 }
+    AiUsage:
+      type: object
+      properties:
+        usageDate: { type: string, format: date }
+        callCount: { type: integer }
+        dailyLimit: { type: integer } # TODO: 확인 필요 (한도 값)
+    StudyStats:
+      type: object
+      properties:
+        totalStudyMinutes: { type: integer }
+        answerCount: { type: integer }
+        targetGrade: { $ref: '#/components/schemas/Grade' }
+        latestEstimatedGrade: { $ref: '#/components/schemas/Grade' }
+        scoreTrend:
+          type: array
+          items:
+            type: object
+            properties:
+              date: { type: string, format: date }
+              fluency: { type: number }
+              vocabulary: { type: number }
+              grammar: { type: number }
+              content: { type: number }
+        weakAreas:
+          type: array
+          items:
+            type: object
+            properties:
+              area: { type: string, enum: [FLUENCY, VOCABULARY, GRAMMAR, CONTENT] }
+              averageScore: { type: number }
+
+    # ── 콘텐츠 ──
+    Topic:
+      type: object
+      properties:
+        topicId: { type: integer, format: int64 }
+        topicName: { type: string }
+    QuestionSummary:
+      type: object
+      properties:
+        questionId: { type: integer, format: int64 }
+        topicId: { type: integer, format: int64 }
+        topicName: { type: string }
+        questionType: { $ref: '#/components/schemas/QuestionType' }
+        difficulty: { type: integer }
+        questionText: { type: string }
+        answered: { type: boolean, description: 내가 답변한 적 있는지 }
+    Question:
+      allOf:
+        - $ref: '#/components/schemas/QuestionSummary'
+        - type: object
+          properties:
+            audioUrl:
+              type: string
+              nullable: true
+              description: 질문 음성 URL. null이면 TTS로 대체 # TODO: 확인 필요 (IR-003 방식)
+    QuestionPage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: '#/components/schemas/QuestionSummary' }
+    ModelAnswer:
+      type: object
+      properties:
+        questionId: { type: integer, format: int64 }
+        targetGrade: { $ref: '#/components/schemas/Grade' }
+        scriptText: { type: string }
+        keyExpressionNote: { type: string, nullable: true }
+    AdminQuestion:
+      allOf:
+        - $ref: '#/components/schemas/Question'
+        - type: object
+          properties:
+            status: { $ref: '#/components/schemas/QuestionStatus' }
+            modelAnswers:
+              type: array
+              items: { $ref: '#/components/schemas/ModelAnswer' }
+    AdminQuestionPage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: '#/components/schemas/AdminQuestion' }
+    QuestionUpsertRequest:
+      type: object
+      required: [topicId, questionType, difficulty, questionText]
+      properties:
+        topicId: { type: integer, format: int64 }
+        questionType: { $ref: '#/components/schemas/QuestionType' }
+        difficulty: { type: integer, minimum: 1, maximum: 6 }
+        questionText: { type: string }
+        status: { $ref: '#/components/schemas/QuestionStatus' }
+    Expression:
+      type: object
+      properties:
+        expressionId: { type: integer, format: int64 }
+        topicId: { type: integer, format: int64, nullable: true }
+        expressionText: { type: string }
+        meaning: { type: string }
+        exampleText: { type: string, nullable: true }
+    ExpressionPage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: '#/components/schemas/Expression' }
+    ExpressionUpsertRequest:
+      type: object
+      required: [expressionText, meaning]
+      properties:
+        topicId: { type: integer, format: int64, nullable: true }
+        expressionText: { type: string, maxLength: 300 }
+        meaning: { type: string, maxLength: 500 }
+        exampleText: { type: string }
+
+    # ── 답변/피드백 ──
+    SubmitAnswerRequest:
+      type: object
+      required: [questionId, answerType]
+      properties:
+        questionId: { type: integer, format: int64 }
+        answerType: { $ref: '#/components/schemas/AnswerType' }
+        audio:
+          type: string
+          format: binary
+          description: answerType=VOICE일 때 필수. 녹음 파일 # TODO: 확인 필요 (허용 포맷·최대 길이)
+        text:
+          type: string
+          description: answerType=TEXT일 때 필수
+        durationSec: { type: integer }
+    SubmitExamAnswerRequest:
+      type: object
+      required: [answerType]
+      properties:
+        answerType: { $ref: '#/components/schemas/AnswerType' }
+        audio: { type: string, format: binary }
+        text: { type: string }
+        durationSec: { type: integer }
+    Answer:
+      type: object
+      properties:
+        answerId: { type: integer, format: int64 }
+        questionId: { type: integer, format: int64 }
+        answerType: { $ref: '#/components/schemas/AnswerType' }
+        audioUrl:
+          type: string
+          nullable: true
+          description: 서명된 임시 URL. 음성 삭제 후 null
+        transcriptText: { type: string, nullable: true }
+        status: { $ref: '#/components/schemas/AnswerStatus' }
+        durationSec: { type: integer, nullable: true }
+        submittedAt: { type: string, format: date-time }
+        hasFeedback: { type: boolean }
+        estimatedGrade:
+          allOf:
+            - $ref: '#/components/schemas/Grade'
+          nullable: true
+    AnswerPage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: '#/components/schemas/Answer' }
+    Feedback:
+      type: object
+      properties:
+        feedbackId: { type: integer, format: int64 }
+        answerId: { type: integer, format: int64 }
+        estimatedGrade: { $ref: '#/components/schemas/Grade' }
+        fluencyScore: { type: integer, minimum: 0, maximum: 100 }
+        vocabularyScore: { type: integer, minimum: 0, maximum: 100 }
+        grammarScore: { type: integer, minimum: 0, maximum: 100 }
+        contentScore: { type: integer, minimum: 0, maximum: 100 }
+        commentText: { type: string }
+        correctedText: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+
+    # ── 모의고사 ──
+    MockExamItem:
+      type: object
+      properties:
+        examItemId: { type: integer, format: int64 }
+        seqNo: { type: integer }
+        question: { $ref: '#/components/schemas/Question' }
+        answerId: { type: integer, format: int64, nullable: true }
+        skipped: { type: boolean }
+    MockExam:
+      type: object
+      properties:
+        examId: { type: integer, format: int64 }
+        status: { $ref: '#/components/schemas/ExamStatus' }
+        questionCount: { type: integer }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: string, format: date-time, nullable: true }
+        overallGrade:
+          allOf:
+            - $ref: '#/components/schemas/Grade'
+          nullable: true
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/MockExamItem' }
+    MockExamPage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: '#/components/schemas/MockExam' }
+
+    # ── 학습 계획 ──
+    StudyPlanItem:
+      type: object
+      properties:
+        planItemId: { type: integer, format: int64 }
+        planDate: { type: string, format: date }
+        itemType: { $ref: '#/components/schemas/PlanItemType' }
+        questionId: { type: integer, format: int64, nullable: true }
+        done: { type: boolean }
+        doneAt: { type: string, format: date-time, nullable: true }
+    StudyPlan:
+      type: object
+      properties:
+        planId: { type: integer, format: int64 }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date, nullable: true }
+        weeklyMinutes: { type: integer }
+        status: { type: string, enum: [ACTIVE, ARCHIVED] }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/StudyPlanItem' }
+
+    # ── 복습 ──
+    ExpressionCard:
+      type: object
+      properties:
+        cardId: { type: integer, format: int64 }
+        expressionId: { type: integer, format: int64, nullable: true }
+        expressionText: { type: string }
+        meaning: { type: string }
+        memo: { type: string, nullable: true }
+        intervalDays: { type: integer }
+        nextReviewAt: { type: string, format: date-time, nullable: true }
+        lastReviewedAt: { type: string, format: date-time, nullable: true }
+        reviewCount: { type: integer }
+    ExpressionCardPage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: '#/components/schemas/ExpressionCard' }
+    ExpressionCardCreateRequest:
+      type: object
+      properties:
+        expressionId: { type: integer, format: int64 }
+        expressionText: { type: string, maxLength: 300 }
+        meaning: { type: string, maxLength: 500 }
+        memo: { type: string }
+      description: expressionId 또는 (expressionText + meaning) 중 하나 필수

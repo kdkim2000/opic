@@ -1,0 +1,15 @@
+{
+  "name": "OPIc 연습",
+  "short_name": "OPIc 연습",
+  "description": "Eva의 질문을 듣고 답변을 녹음하는 OPIc 연습 앱",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f6fb",
+  "theme_color": "#4f46e5",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
