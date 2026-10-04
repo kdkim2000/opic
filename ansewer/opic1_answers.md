@@ -6,15 +6,15 @@
 - 다 외우지 말고 **굵은 표현**(뼈대)만 외우면 됩니다. 나머지는 그 자리에서 이어 붙이세요.
 - `...` 표시는 롤플레이에서 상대방이 대답하는 구간입니다. 1~2초 쉬세요.
 
-## 확정된 사실 (이 스크립트 전체에 일관되게 사용)
+## 이 스크립트가 쓰는 사실 (개인 식별 정보 제거)
 
-| 항목 | 내용 |
-|---|---|
-| 이름 / 직업 | Bread / 삼성중공업 IT 책임자 |
-| 집 | 25층 아파트의 3층, 아내와 둘이 거주, 욕실 2개 |
-| 정전·단수 | 폭우 후 14일간. 집에 머물 수 없어 장인 집에서 생활, 전기가 먼저 복구되어 장인 집 물을 길어 사용 |
-| 회식 | 지난주, 8명, 신입 3명, 숯불 삼겹살 + 소주 |
-| 차 고장 | 남원, 구동 벨트를 잡아 주는 고무 부품 파손 → 모든 벨트 정지, 배터리 충전 불가, 에어컨 불가 |
+| 항목 | 내용 | 상태 |
+|---|---|---|
+| 기본 | 회사원, IT 업무, 커피 좋아함, 음악·게임·독서 취미 | 임의 (필요시 수정) |
+| 집 | 아파트, 방 2개 + 거실·주방·욕실 2개, 내 방(컴퓨터·침대) | 임의 (필요시 수정) |
+| 정전·단수 | 폭우 후 14일간. 집에 머물 수 없어 지인(부모님) 집에서 생활, 전기가 먼저 복구되어 물을 길어 사용 | 임의 (필요시 수정) |
+| 회식 | 지난주, 8명, 신입 3명, 숯불 삼겹살 + 소주 | 임의 (필요시 수정) |
+| 차 고장 | 남원, 구동 벨트를 잡아 주는 고무 부품 파손 → 모든 벨트 정지, 배터리 충전 불가, 에어컨 불가 | 임의 (필요시 수정) |
 
 ## 만능 구조 (IH 공식)
 
@@ -33,9 +33,9 @@
 
 **Q:** Let's start the interview now. Tell me something about yourself.
 
-> Hi, my name is Bread. I'm **a big coffee lover**, so I guess I'll start there. **I can't really start my day without a cup of coffee**, and this morning was no different. I had one before I came to take this test, and I'm **already looking forward to** another one once it's over. I work **in IT at Samsung Heavy Industries**. I'm **in charge of** our IT systems, so my days are pretty busy. I live in an apartment with my wife, and we're **pretty much homebodies**. In my free time, I like listening to music, playing computer games, and reading. So, yeah, that's me **in a nutshell**: **coffee, my wife, and my computer**. I'm happy to be here, and I hope I do well today!
+> Hi, how's it going? I'm **a big coffee lover**, so I guess I'll start there. **I can't really start my day without a cup of coffee**, and this morning was no different. I had one before I came to take this test, and I'm **already looking forward to** another one once it's over. I work **in IT**, and my days are pretty busy. I live in an apartment, and I'm **pretty much a homebody**. In my free time, I like listening to music, playing computer games, and reading. So, yeah, that's me **in a nutshell**: **coffee, music, and my computer**. I'm happy to be here, and I hope I do well today!
 
-- 핵심: `a big coffee lover`, `can't start my day without ~`, `in charge of ~`, `in a nutshell`
+- 핵심: `a big coffee lover`, `can't start my day without ~`, `already looking forward to ~`, `in a nutshell`
 
 ---
 
@@ -75,10 +75,10 @@
 
 **Q:** I would like to know about your house. How many rooms are there? Also, tell me about your favorite room.
 
-> I live in an apartment **on the 3rd floor of a 25-story building** with my wife. We have **three bedrooms, a living room, a kitchen, and two bathrooms**. It's **not huge, but it's cozy**, and it's **just the right size for the two of us**. My favorite room, **without a doubt, is my own room**. It has a computer, so **I can do pretty much everything in there**. I listen to music, play games, study, and read books. And I have a comfortable bed, too, so when I'm tired, **I can just lie down and chill**. Sometimes I even fall asleep with the music on. **It's like my own little escape.** My wife jokes that I **never come out of that room** on weekends, and she's not wrong!
+> I live in **an apartment**. We have **two bedrooms, a living room, a kitchen, and two bathrooms**. It's **not huge, but it's cozy**, and it's **just the right size for me**. My favorite room, **without a doubt, is my own room**. It has a computer, so **I can do pretty much everything in there**. I listen to music, play games, study, and read books. And I have a comfortable bed, too, so when I'm tired, **I can just lie down and chill**. Sometimes I even fall asleep with the music on. **It's like my own little escape.** My friends joke that I **never come out of that room** on weekends, and they're not wrong!
 
 - 핵심: `just the right size for ~`, `without a doubt`, `chill`, `my own little escape`
-- 침실 3개는 임시값입니다. 실제 개수로 `three bedrooms`만 바꾸세요.
+- 침실 2개는 임시값입니다. 실제 개수로 `two bedrooms`만 바꾸세요.
 
 ---
 
@@ -86,7 +86,7 @@
 
 **Q:** Tell me about some problems you have experienced in your house. For example, it could be noise from your neighbor, something was broken, or someone you lived with didn't cooperate with you.
 
-> Honestly, **I haven't had many problems** in my house. We **don't have noisy neighbors**, and things rarely break. I've only had small things, like **a leaky faucet** or **a light bulb going out**. **But there was one huge problem** this summer. It rained so hard for several days, and **the power and the water went out** in our whole building. **It was a real mess.** We couldn't use the lights, the refrigerator, or even the toilet. And it **lasted for two whole weeks**. That was **by far the worst problem** I've ever had at home.
+> Honestly, **I haven't had many problems** in my house. We **don't have noisy neighbors**, and things rarely break. I've only had small things, like **a leaky faucet** or **a light bulb going out**. **But there was one huge problem** this summer. It rained so hard for several days, and **the power and the water went out** in my whole building. **It was a real mess.** We couldn't use the lights, the refrigerator, or even the toilet. And it **lasted for two whole weeks**. That was **by far the worst problem** I've ever had at home.
 
 - 핵심: `a leaky faucet`, `by far the worst`, `a real mess`, `two whole weeks`
 - 전략: Q6에서는 "큰 사건이 있었다"까지만 말하고, 풀스토리는 Q7에 남겨 둡니다.
@@ -97,15 +97,15 @@
 
 **Q:** Tell me about one of the problems you've mentioned above. What was the problem, and how did you deal with it?
 
-> Sure. **It happened this past summer.** We had **a huge storm** for about three days, and **out of nowhere**, the power went out. A little later, the water stopped, too. We found out that **the building's electrical room and water pump had flooded**. They said it would take **a long time** to fix. At first, we stayed home, but **there was nothing to do**. My computer was off, my phone was **running out of battery**, and it was pitch dark. **We just sat there with candles** and talked. That's when I realized **how much I depend on electricity**.
+> Sure. **It happened this past summer.** There was **a huge storm** for about three days, and **out of nowhere**, the power went out. A little later, the water stopped, too. I found out that **the building's electrical room and water pump had flooded**. They said it would take **a long time** to fix. At first, I stayed home, but **there was nothing to do**. My computer was off, my phone was **running out of battery**, and it was pitch dark. **I just sat there with candles** and listened to the rain. That's when I realized **how much I depend on electricity**.
 >
-> **The first big problem was our food.** Our fridge was full, and it was going to **spoil** in the heat. So **we packed everything into coolers** and took it to **my father-in-law's house**. And honestly, **we couldn't stay in our apartment**, because there was no air conditioning, no water, and **no toilet**. So **we ended up living at my father-in-law's place**. In the end, **it took two whole weeks** to fix everything!
+> **The first big problem was my food.** My fridge was full, and it was going to **spoil** in the heat. So **I packed everything into coolers** and took it to **my parents' house**. And honestly, **I couldn't stay in my apartment**, because there was no air conditioning, no water, and **no toilet**. So **I ended up living at my parents' place**. In the end, **it took two whole weeks** to fix everything!
 >
-> **The power came back first.** But there was still no water, so **I'd go back to our apartment** and **carry buckets of water from my father-in-law's house** just to wash up and flush the toilet. It was **a real workout**, especially since I'm not exactly a gym guy. **When the water finally came back, we cheered like we'd won the lottery.** After that, I really **appreciated the little things**, like **running water** and **a cold drink**.
+> **The power came back first.** But there was still no water, so **I'd go back to my apartment** and **carry buckets of water from my parents' house** just to wash up and flush the toilet. It was **a real workout**, especially since I'm not exactly a gym guy. **When the water finally came back, I cheered like I'd won the lottery.** After that, I really **appreciated the little things**, like **running water** and **a cold drink**.
 
 - 핵심: `out of nowhere`, `spoil`, `ended up -ing`, `a real workout`, `appreciate the little things`
 - 시간이 모자라면 둘째 단락의 `The first big problem was our food` 부분을 줄이세요.
-- 스토리 순서: 정전·단수 → 집에서 할 일이 없음 → 음식을 장인 집으로 → 장인 집에서 생활 → 전기가 먼저 복구 → 물을 길어 옴 → 단수 해제.
+- 스토리 순서: 정전·단수 → 집에서 할 일이 없음 → 음식을 부모님 집으로 → 부모님 집에서 생활 → 전기가 먼저 복구 → 물을 길어 옴 → 단수 해제.
 
 ---
 
@@ -161,13 +161,13 @@
 
 ---
 
-## Q13. 표/예약 문제 경험 (지어낸 이야기: 기념일 예약)
+## Q13. 표/예약 문제 경험 (지어낸 이야기: 생일 예약)
 
 **Q:** Have you ever been in a situation where you had a problem with buying tickets or making a reservation? What was the situation, and how did you solve the problem?
 
-> Yes, and it's **kind of embarrassing, but also funny**. **A couple of years ago**, I wanted to **surprise my wife** for our anniversary, so I **booked a table** at a fancy Italian restaurant online. **I was so proud of myself**. **On the big night, we showed up** all dressed up, and the host **looked at his computer** and said, "**I'm sorry, but we don't have a reservation for tonight.**" I was **shocked**. I showed him my phone, and then **I saw it**: **I had booked it for the next day**! My wife just looked at me and **burst out laughing**. The restaurant was **fully booked**, so **we couldn't get in**.
+> Yes, and it's **kind of embarrassing, but also funny**. **A couple of years ago**, I wanted to **surprise a friend** for her birthday, so I **booked a table** at a fancy Italian restaurant online. **I was so proud of myself**. **On the big night, we showed up** all dressed up, and the host **looked at his computer** and said, "**I'm sorry, but we don't have a reservation for tonight.**" I was **shocked**. I showed him my phone, and then **I saw it**: **I had booked it for the next day**! My friend just looked at me and **burst out laughing**. The restaurant was **fully booked**, so **we couldn't get in**.
 >
-> **We ended up buying fried chicken and beer** from a convenience store and **eating on a bench** in a park. **Honestly, it was one of the best anniversaries ever.** **We still joke about it.** Since then, **I always double-check my reservations**, like three times!
+> **We ended up buying fried chicken and beer** from a convenience store and **eating on a bench** in a park. **Honestly, it was one of the best birthdays ever.** **We still joke about it.** Since then, **I always double-check my reservations**, like three times!
 
 - 핵심: `showed up`, `burst out laughing`, `ended up -ing`, `double-check`
 
@@ -177,7 +177,7 @@
 
 **Q:** You indicated in the survey that you take vacations domestically. How is traveling different now compared to the past? Do you think traveling is easier or more difficult now than before?
 
-> **I think traveling is a lot easier now.** **In the past, we had to use paper maps**, and **we'd get lost** all the time. Now, **I just use a navigation app**, and it tells me **the fastest route** and even **the traffic**. We also **book hotels and restaurants online**, and **read reviews** before going. **This past summer, my wife and I drove along the west coast** of Korea. We **planned the whole trip on our phones**, and we **found great seafood places** and **cute cafes** just by searching. **We watched the sunset** at the beach, and it was **unforgettable**.
+> **I think traveling is a lot easier now.** **In the past, we had to use paper maps**, and **we'd get lost** all the time. Now, **I just use a navigation app**, and it tells me **the fastest route** and even **the traffic**. We also **book hotels and restaurants online**, and **read reviews** before going. **This past summer, a friend and I drove along the west coast** of Korea. We **planned the whole trip on our phones**, and we **found great seafood places** and **cute cafes** just by searching. **We watched the sunset** at the beach, and it was **unforgettable**.
 >
 > **On the other hand**, there's a downside. **Everything is more crowded now** because **everyone shares places on social media**. **And prices are higher** than before. **But overall, I'd say it's easier**, and **it's more fun**, too.
 
@@ -191,7 +191,7 @@
 
 > **Travel problems** can be anything from **bad weather** to **getting lost** to **car trouble**. People usually **handle them** by **searching online**, **calling customer service**, or **just staying calm** and **finding a plan B**.
 >
-> **Actually, I had a pretty bad experience recently.** **On a weekend**, my wife and I **drove to Jirisan**. On our way back, **in a city called Namwon**, **the air conditioner suddenly stopped working**. It was still summer, so **it felt like an oven** in the car! Then I noticed **the battery wasn't charging**, either. **I called my insurance company**, and **they sent a mechanic**. He said **a rubber part that holds the belts had broken**, so **none of the belts were running**. I'm **not a car guy**, so I don't know the details, but **the point is the car couldn't be driven**. And it was a holiday, so **all the repair shops were closed**. **We had no choice**: **we left the car there** and **took a bus home**. It was **a long, tiring day**.
+> **Actually, I had a pretty bad experience recently.** **On a weekend**, a friend and I **drove to Jirisan**. On our way back, **in a city called Namwon**, **the air conditioner suddenly stopped working**. It was still summer, so **it felt like an oven** in the car! Then I noticed **the battery wasn't charging**, either. **I called my insurance company**, and **they sent a mechanic**. He said **a rubber part that holds the belts had broken**, so **none of the belts were running**. I'm **not a car guy**, so I don't know the details, but **the point is the car couldn't be driven**. And it was a holiday, so **all the repair shops were closed**. **We had no choice**: **we left the car there** and **took a bus home**. It was **a long, tiring day**.
 >
 > **The next Tuesday, the repair shop called** and said **they had the part**. They **fixed it**, and **I took a bus all the way back to Namwon** to **pick up the car**. **Honestly, it was a hassle**, but **looking back, it was kind of an adventure**. **The lesson I learned** is: **get your car checked before a long trip**!
 
@@ -204,4 +204,4 @@
 
 1. 하루에 3문항씩 5일: 영어 스크립트를 소리 내어 읽고 → 굵은 표현만 보고 말해 봅니다.
 2. 스크립트를 보지 않고 **1분 타이머**로 말해 봅니다. 문장이 달라져도 괜찮습니다. 뼈대 표현이 나오면 성공입니다.
-3. 이야기 3개(Q7 정전, Q13 기념일, Q15 남원)는 **시험장에서 다른 문제에도 재활용**할 수 있습니다. 어떤 질문이 나와도 "이 이야기로 끌고 오기"를 연습하세요.
+3. 이야기 3개(Q7 정전, Q13 생일 예약, Q15 남원)는 **시험장에서 다른 문제에도 재활용**할 수 있습니다. 어떤 질문이 나와도 "이 이야기로 끌고 오기"를 연습하세요.

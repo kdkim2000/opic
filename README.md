@@ -6,12 +6,15 @@ OPIc 모의고사 질문을 Eva 음성으로 듣고, 내 답변 스크립트를 
 
 | 경로 | 내용 |
 | --- | --- |
-| `test/` | 질문 원문(`opic1~8.txt`)과 질문 MP3(`test/mp3/`, `manifest.csv`) |
-| `ansewer/` | 내 답변 스크립트(`opicN_answers.md`)와 모델 답변 MP3(`ansewer/mp3/`) |
+| `test/` | 이전 문제 1~8: 질문 원문(`opic1~8.txt`)과 질문 MP3(`test/mp3/`, `manifest.csv`) |
+| `ansewer/` | 이전 문제 1~8: 답변 스크립트(`opicN_answers.md`)와 모델 답변 MP3(`ansewer/mp3/`) |
+| `test2/` | 최신 문제 16~30: 질문 원문(`Opic16~30.txt`)과 질문 MP3(`test2/mp3/opicN/`, `manifest.csv`) |
+| `answer2/` | 최신 문제 16~30: 답변 스크립트(`opicN_answers.md`)와 답변 MP3(`answer2/mp3/`, `manifest_opicN.csv`) |
 | `app/` | 정적 PWA (`index.html`, `app.js`, `style.css`, `sw.js`) |
 | `tools/build_data.py` | 앱 데이터(`app/data/questions.json`) 생성과 음원 복사 |
 | `gen_mp3.py` | 질문 MP3 생성 (edge-tts, `en-US-AvaNeural`) |
 | `gen_answer_mp3.py` | 답변 MP3 생성 (edge-tts, `en-US-AndrewNeural`) |
+| `gen_mp3_test2.py`, `gen_answer_mp3_test2.py` | 최신 문제(16~30)용 질문/답변 MP3 생성. 파일명 규칙은 이전 문제와 동일 |
 | `docs/` | AI-DLC 설계 산출물 |
 
 ## 사용법
@@ -21,8 +24,9 @@ pip install edge-tts
 
 # 답변 수정 후 MP3 재생성 (세트 번호, 문항 번호 지정 가능)
 python gen_answer_mp3.py --set 3 5 7
+# 최신 문제(16~30) 답변: python gen_answer_mp3_test2.py 16 --q 3 7   (--force 로 전체 재생성)
 
-# 앱 데이터 생성 + 음원 복사 (app/audio, app/data/questions.json 은 git 에 올리지 않는다)
+# 앱 데이터 생성 + 음원 복사 (세트 1~8 + 16~30, 총 23세트 344문항) (app/audio, app/data/questions.json 은 git 에 올리지 않는다)
 python tools/build_data.py
 
 # 로컬 실행

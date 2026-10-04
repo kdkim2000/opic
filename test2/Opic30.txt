@@ -1,0 +1,52 @@
+Opic30 — 문제 스크립트 (여우 MOCK TEST 30, 난이도 5~6)
+
+[Background Survey]
+1. 일 경험 없음
+2. 학생 - 아니오, 수업 등록 후 5년
+3. 독신자로서 개인 주택이나 아파트에 거주
+4. (총 8개) 영화보기, 콘서트 가기, 공연/연극 관람하기, 공원 가기, 해변가기, 카페/커피전문점 가기
+5. (총 1개) 음악감상
+6. (총 3개) 조깅, 걷기, 신체 운동을 즐기지 않음
+7. (총 2개) 국내여행, 해외여행
+
+------------------------------------------------------------
+[자기소개]
+Q1. Let's start the interview now. Tell me something about yourself.
+
+------------------------------------------------------------
+[음악 감상]
+Q2. You indicated in the survey that you listen to music. What kind of music do you listen to, and who are some of your favorite musicians or composers?
+
+Q3. When and where do you usually listen to music? Do you listen to the radio, or do you go to concerts?
+
+Q4. When did you first become interested in music? What kind of music did you first listen to, and how has your taste in music changed over time?
+
+------------------------------------------------------------
+[공원 가기]
+Q5. You indicated in the survey that you go to parks. Tell me about a park you like to visit. What is it like? What do people usually do there?
+
+Q6. What do you usually do at the park? What activities do you enjoy? Describe a typical day at the park from beginning to end.
+
+Q7. Can you tell me about a memorable experience you had at a park? Was it interesting? Tell me what happened in detail.
+
+------------------------------------------------------------
+[휴일 / 명절 (돌발)]
+Q8. Tell me about your country's holidays. Where do people usually celebrate those holidays? How do they celebrate them?
+
+Q9. Tell me about a holiday you celebrated as a child. Where did you go, what did you do, and what are your memories of that holiday?
+
+Q10. What did you do on your last holiday? Who did you spend it with, and what activities did you do? Was it memorable for you?
+
+------------------------------------------------------------
+[롤플레이 — 기술 산업 / 친구]
+Q11. I'd like to give you a situation and ask you to act it out. You are writing a report on the technology industry. Your friend is an expert in this field. Call your friend and ask three or four questions to learn more about the technology industry.
+
+Q12. I'm sorry, but there's a problem I need you to resolve. You have an appointment to meet your friend to learn more about the industry they work in. However, a few days before the meeting, a family member has an emergency. Call your friend, explain the situation, and suggest two or three alternatives to get the information.
+
+Q13. That's the end of the situation. Talk about an exciting new product you have heard of. For example, it could be a phone, car, video game, or some other product. How did you learn about it? Tell me about the product in detail.
+
+------------------------------------------------------------
+[음식 / 식품 (돌발)]
+Q14. How has the way people buy food changed over the years? Where did people usually buy food in the past? Where do they usually buy it now?
+
+Q15. Food can get contaminated by bacteria. Food can go bad or become toxic. Tell me about something you heard on the news about this issue.

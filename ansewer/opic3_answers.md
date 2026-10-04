@@ -1,34 +1,33 @@
 # OPIc 모의고사 3 — 내 답변 스크립트 (최종본 v2)
 
-목표는 IH (레벨 5-5)입니다. 쉬운 표현과 미국인이 실제 쓰는 구어체로, 유창하게 이어 말하는 것이 기준입니다. 자기소개(Q1)는 opic1, opic2와 동일합니다.
+목표는 IH (레벨 5-5)입니다. 쉬운 표현과 미국인이 실제 쓰는 구어체로, 유창하게 이어 말하는 것이 기준입니다. 자기소개(Q1)는 모든 세트 동일합니다.
 
 - 답변 길이는 약 60~80초(8~12문장)입니다.
 - 다 외우지 말고 **굵은 표현**(뼈대)만 외우세요.
 - `...` 표시는 롤플레이에서 상대방이 대답하는 구간입니다. 1~2초 쉬세요.
 - 임시값 표시는 모두 정리했습니다. 실제와 다른 부분(첫 해외여행·공원 등)은 "필요시 수정" 항목입니다.
 
-## 이 스크립트가 쓰는 사실
+## 이 스크립트가 쓰는 사실 (개인 식별 정보 제거)
 
 | 항목 | 내용 | 상태 |
 | --- | --- | --- |
-| 기본 | Bread, 삼성중공업 IT 책임자, 거제 거주, 25층 아파트 3층, 아내, 딸 은빈, 아들 수현, 커피 애호가 | 확정 |
-| 집 구조 | 침실 3, 거실, 주방, 욕실 2, 내 방(컴퓨터, 침대) | 확정 (침실 3개는 확인 안 됨) |
-| 장인어른 | 가까이 삶. 진지하고 조용한 분 (opic2) | 확정 |
-| 어린 시절 집 | 마당 있는 단독주택, 6명의 누나가 있는 막내 | 확정 |
-| 장인어른 상세 | 80세, 취미 골프, 진지하고 조용한 성격 | 확정 |
-| 어린 시절 약속 | 치과 | 지어낸 이야기 (승인됨) |
-| 기억에 남는 약속 | 카페 지점 착각 | 지어낸 이야기 (승인됨) |
-| 첫 해외여행 | 일본 오사카, 아내와 | 임시 (필요시 수정) |
-| 기억에 남는 해외 경험 | 기차를 잘못 탐 | 임시 (필요시 수정) (지어낸 이야기) |
-| 공원 | 롤플레이, 기억에 남는 경험 (강아지가 치킨 훔침) | 임시 (필요시 수정) (지어낸 이야기) |
+| 기본 | 회사원, IT 업무, 커피 좋아함, 음악·게임·독서 취미 (개인 식별 정보 제거) | 임의 (필요시 수정) |
+| 집 구조 | 아파트, 방 2개 + 거실·주방·욕실 2개, 내 방(컴퓨터·침대·책장) | 임의 (필요시 수정) |
+| 어린 시절 집 | 마당 있는 작은 단독주택 | 임의 (필요시 수정) |
+| 가까운 어른 | 이웃의 어른 (조용하지만 따뜻한 분, 텃밭, 등산) | 임의 (필요시 수정) |
+| 어린 시절 약속 | 치과 | 임의 (지어낸 이야기) |
+| 기억에 남는 약속 | 카페 지점 착각 | 임의 (지어낸 이야기) |
+| 첫 해외여행 | 일본 오사카, 친구와 | 임의 (필요시 수정) |
+| 기억에 남는 해외 경험 | 기차를 잘못 탐 | 임의 (필요시 수정) (지어낸 이야기) |
+| 공원 | 롤플레이, 기억에 남는 경험 (강아지가 치킨 훔침) | 임의 (필요시 수정) (지어낸 이야기) |
 
 ---
 
-## Q1. 자기소개 (opic1, opic2와 동일)
+## Q1. 자기소개
 
 **Q:** Let's start the interview now. Tell me something about yourself.
 
-> Hi, my name is Bread. I'm **a big coffee lover**, so I guess I'll start there. **I can't really start my day without a cup of coffee**, and this morning was no different. I had one before I came to take this test, and I'm **already looking forward to** another one once it's over. I work **in IT at Samsung Heavy Industries**. I'm **in charge of** our IT systems, so my days are pretty busy. I live in an apartment with my wife, and we're **pretty much homebodies**. In my free time, I like listening to music, playing computer games, and reading. So, yeah, that's me **in a nutshell**: **coffee, my wife, and my computer**. I'm happy to be here, and I hope I do well today!
+> Hi, how's it going? I'm **a big coffee lover**, so I guess I'll start there. **I can't really start my day without a cup of coffee**, and this morning was no different. I had one before I came to take this test, and I'm **already looking forward to** another one once it's over. I work **in IT**, and my days are pretty busy. I live in an apartment, and I'm **pretty much a homebody**. In my free time, I like listening to music, playing computer games, and reading. So, yeah, that's me **in a nutshell**: **coffee, music, and my computer**. I'm happy to be here, and I hope I do well today!
 
 ---
 
@@ -36,7 +35,7 @@
 
 **Q:** Describe your house to me. What does it look like? What types of rooms does it have? Tell me about your favorite room.
 
-> I live in **an apartment in Geoje**, on **the 3rd floor of a 25-story building**. **From the outside, it looks like a typical Korean apartment complex**: **a row of tall, boxy buildings**. **Inside, it's bright and cozy.** We have **three bedrooms, a living room, a kitchen, and two bathrooms**. **The living room is the heart of the house**, because **that's where my wife and I relax and watch TV**. But **my favorite room, by far, is my own room**. **It has my computer, a comfortable bed, and a bookshelf.** **I can listen to music, play games, study, or read** in there. **When I close the door, it feels like my own little world.** **I'm honestly never bored in that room.**
+> I live in **an apartment** in **a small city by the sea**. **From the outside, it looks like a typical Korean apartment complex**: **a row of tall, boxy buildings**. **Inside, it's bright and cozy.** I have **two bedrooms, a living room, a kitchen, and two bathrooms**. **The living room is the heart of the house**, because **that's where I relax and watch TV**. But **my favorite room, by far, is my own room**. **It has my computer, a comfortable bed, and a bookshelf.** **I can listen to music, play games, study, or read** in there. **When I close the door, it feels like my own little world.** **I'm honestly never bored in that room.**
 
 - 핵심: `a typical Korean apartment complex`, `the heart of the house`, `by far`, `my own little world`
 
@@ -46,7 +45,7 @@
 
 **Q:** What activities do you usually do when you are at home? What do you do on weekdays, and what do you do on weekends?
 
-> **On weekdays, I'm usually pretty tired** when I get home. **I have dinner with my wife**, **take a quick shower**, and then **head straight to my room**. **I'll put on some Rescene songs** and **play a game for an hour or so**. **Sometimes I read before bed.** **I can't go to sleep without a good book.** **On weekends, it's a completely different story.** **I start the day with a nice, slow cup of coffee.** Then **I might do some chores**, like **laundry or cleaning**. In the afternoon, **I usually play games for a few hours**, or **I go to Deokpo Beach for a walk** with my wife. **In the evening, we often order food** and **watch a movie together**. **It's simple, but it's exactly how I like to relax.**
+> **On weekdays, I'm usually pretty tired** when I get home. **I have dinner**, **take a quick shower**, and then **head straight to my room**. **I'll put on some K-pop songs** and **play a game for an hour or so**. **Sometimes I read before bed.** **I can't go to sleep without a good book.** **On weekends, it's a completely different story.** **I start the day with a nice, slow cup of coffee.** Then **I might do some chores**, like **laundry or cleaning**. In the afternoon, **I usually play games for a few hours**, or **I go to a nearby beach for a walk** with a friend. **In the evening, we often order food** and **watch a movie together**. **It's simple, but it's exactly how I like to relax.**
 
 - 핵심: `head straight to ~`, `a completely different story`, `do chores`, `It's exactly how I like to relax`
 
@@ -56,21 +55,21 @@
 
 **Q:** Tell me about the house you lived in when you were a child. How was it different from the house you are living in now?
 
-> **When I was a kid, I lived in a small house with a yard.** **It was an old, one-story house**, and **my parents grew vegetables in the yard**. **I'm the youngest of seven kids, with six older sisters!** **So the house was always loud and crowded**, and **I shared a room with my sisters**, so **I never had my own space**. **They loved bossing me around**, too. **In the winter, it was freezing**, because **we only had floor heating in some rooms**. **In the summer, we'd play in the yard** with **a plastic pool**. **Honestly, I loved that house.** **Now, I live in an apartment**, and **it's very different**. **It's much more convenient**: **it's warm, clean, and easy to manage**. And **I finally have my own room**! **But I do miss the yard**. **Living on the 3rd floor, I can't just run outside** and **play in the grass**. **Looking back, I think both houses have their own charm.**
+> **When I was a kid, I lived in a small house with a yard.** **It was an old, one-story house**, and **my parents grew vegetables in the yard**. **The house was always warm and lively**, and **I loved playing outside**. **In the winter, it was freezing**, because **we only had floor heating in some rooms**. **In the summer, we'd play in the yard** with **a plastic pool**. **Honestly, I loved that house.** **Now, I live in an apartment**, and **it's very different**. **It's much more convenient**: **it's warm, clean, and easy to manage**. And **I finally have my own room**! **But I do miss the yard**. **Living in an apartment, I can't just run outside** and **play in the grass**. **Looking back, I think both houses have their own charm.**
 
-- 핵심: `a small house with a yard`, `the youngest of seven`, `shared a room with ~`, `freezing`, `more convenient`, `their own charm`
-- 마당 있는 단독주택, 누나 6명(막내)으로 확정했습니다. 누나들 이야기를 한 줄 더 하고 싶으면 `They took care of me like little moms`를 붙이세요.
+- 핵심: `a small house with a yard`, `freezing`, `play outside`, `more convenient`, `their own charm`
+- 마당 있는 단독주택으로 정했습니다.
 
 ---
 
-## Q5. 가족 한 명 소개 (장인어른)
+## Q5. 가까운 사람 한 명 소개 (이웃 어른)
 
 **Q:** Tell me about one of your family members or friends. What is he or she like? Tell me about the person in detail.
 
-> **I'd like to talk about my father-in-law.** **He's 80 years old**, and **he lives close to us**, so **we see him pretty often**. **He's a serious and quiet man**, **but he has a very warm heart**. **He doesn't talk much**, **but he shows he cares through his actions**. For example, **he always fills our fridge** with **vegetables from his little garden** whenever we visit. **He loves golf**, and **even at 80, he still plays on weekends!** **He's always on the course**, **hoping to hit a hole-in-one**. **He's also very good with his hands.** **When something breaks at our house, he fixes it**. **I really respect him.** **He's not just my father-in-law**: **he's like a second father to me.**
+> **I'd like to talk about an older neighbor of mine.** **He's retired**, and **he lives close to me**, so **we see each other pretty often**. **He's a serious and quiet man**, **but he has a very warm heart**. **He doesn't talk much**, **but he shows he cares through his actions**. For example, **he always gives me vegetables from his little garden** whenever I stop by. **He loves hiking**, and **even at his age, he's on the mountain every weekend!** **He's always looking for a new trail**, **hoping to find the best view.** **He's also very good with his hands.** **When something breaks in the neighborhood, he fixes it**. **I really respect him.** **He's not just my neighbor**: **he's like family to me.**
 
-- 핵심: `a warm heart`, `shows he cares through his actions`, `good with his hands`, `like a second father`
-- 80세, 취미 골프로 확정했습니다. (opic2의 "진지하고 조용한 분", "눈시울이 붉어짐"과 이어집니다.)
+- 핵심: `a warm heart`, `shows he cares through his actions`, `good with his hands`, `like family to me`
+- 조용하지만 따뜻한 이웃 어른으로 정했습니다.
 
 ---
 
@@ -112,7 +111,7 @@
 
 **Q:** Tell me about your first trip abroad. Where did you go, and who did you go with? What did you do there?
 
-> **My first trip abroad was to Japan.** **I went to Osaka with my wife** **a long time ago**, **before we had kids**. **I was so excited**, because **it was my first time getting on a plane**! **We stayed for four days.** **The first thing we did was try the local street food**: **takoyaki**, **which are fried octopus balls**, and **okonomiyaki**. **They were amazing.** **We also visited Osaka Castle**, **walked around the Dotonbori area**, and **went shopping**. **The neon lights at night were incredible**. **One thing that surprised me was how clean and polite everything was.** **Even though we couldn't speak much Japanese, we managed.** **It was such a special trip**, and **it made me fall in love with traveling.**
+> **My first trip abroad was to Japan.** **I went to Osaka with a friend** **a long time ago**, **in my twenties**. **I was so excited**, because **it was my first time getting on a plane**! **We stayed for four days.** **The first thing we did was try the local street food**: **takoyaki**, **which are fried octopus balls**, and **okonomiyaki**. **They were amazing.** **We also visited Osaka Castle**, **walked around the Dotonbori area**, and **went shopping**. **The neon lights at night were incredible**. **One thing that surprised me was how clean and polite everything was.** **Even though we couldn't speak much Japanese, we managed.** **It was such a special trip**, and **it made me fall in love with traveling.**
 
 - 핵심: `my first time -ing`, `try the local street food`, `We managed`, `fall in love with traveling`
 - 목적지(오사카)와 시기는 임시값입니다. 실제 첫 해외여행으로 바꿔 주세요.
@@ -158,12 +157,12 @@
 
 **Q:** Tell me about a memorable experience you had at a park. What happened, and why was it memorable to you? Also, how did you deal with the situation?
 
-> **One time, my family went on a picnic at a park**, **when our kids were little**. **It was a beautiful spring day**, and **we'd brought a basket full of food**, including **a big box of fried chicken**. **We spread out a blanket**, and **the kids were playing nearby**. **I was about to take the first bite, when out of nowhere, a huge golden retriever ran up**. **Before I knew it, it grabbed the whole box of chicken and bolted!** **I just sat there with my mouth open.** **My wife started laughing so hard that she couldn't breathe.**
+> **One time, my friends and I went on a picnic at a park**. **It was a beautiful spring day**, and **we'd brought a basket full of food**, including **a big box of fried chicken**. **We spread out a blanket**, and **my friends were playing frisbee nearby**. **I was about to take the first bite, when out of nowhere, a huge golden retriever ran up**. **Before I knew it, it grabbed the whole box of chicken and bolted!** **I just sat there with my mouth open.** **One of my friends started laughing so hard that she couldn't breathe.**
 >
-> **I chased the dog**, **but it was way too fast**. **Then I saw the owner running after it**, **shouting, "I'm so sorry!"** **He felt terrible**, and **he offered to buy us a new chicken.** **In the end, we all had lunch together**, **and the kids played with the dog.** **I wasn't mad at all.** **It's one of my favorite family memories**, **and we still joke about it** to this day.
+> **I chased the dog**, **but it was way too fast**. **Then I saw the owner running after it**, **shouting, "I'm so sorry!"** **He felt terrible**, and **he offered to buy us a new chicken.** **In the end, we all had lunch together**, **and we all played with the dog.** **I wasn't mad at all.** **It's one of my favorite memories with my friends**, **and we still joke about it** to this day.
 
 - 핵심: `spread out a blanket`, `out of nowhere`, `bolted`, `Before I knew it`, `to this day`
-- 지어낸 이야기입니다. 아이들이 어렸을 때라는 설정은 임시값입니다. (opic1 Q13의 기념일 이야기와 달리 가족 중심이라 겹치지 않습니다.)
+- 지어낸 이야기입니다. (opic1 Q13의 생일 예약 이야기와 겹치지 않습니다.)
 
 ---
 
@@ -182,9 +181,9 @@
 
 **Q:** How is using the Internet different among people in different age groups? What do younger people normally do on the Internet, and what do older people do on the Internet?
 
-> **It's very different depending on the age group.** **Younger people, like teenagers and people in their twenties, use the Internet for everything.** **They spend hours on social media**, **watch short videos**, **play online games**, and **chat with friends**. **They're also really quick to pick up new apps.** **My daughter, Eunbin, and my son, Suhyun, are perfect examples.** **On the other hand, older people use it more for practical things.** **They read the news**, **watch YouTube**, and **use messaging apps** to **keep in touch** with family. **For example, my father-in-law uses video calls** to **talk to his grandkids.** **They tend to be more careful**, and **sometimes they need help** with **new technology**. **I'm often the one who helps them set things up.** **That's one of the perks of being the IT guy in the family!**
+> **It's very different depending on the age group.** **Younger people, like teenagers and people in their twenties, use the Internet for everything.** **They spend hours on social media**, **watch short videos**, **play online games**, and **chat with friends**. **They're also really quick to pick up new apps.** **My younger coworkers are perfect examples.** **On the other hand, older people use it more for practical things.** **They read the news**, **watch YouTube**, and **use messaging apps** to **keep in touch** with family. **For example, my parents use video calls** to **talk to our relatives.** **They tend to be more careful**, and **sometimes they need help** with **new technology**. **I'm often the one who helps them set things up.** **That's one of the perks of being the IT guy!**
 
 - 핵심: `quick to pick up ~`, `practical things`, `keep in touch`, `perks of being ~`
-- 은빈·수현·장인어른이 등장해서 앞선 답변들과 이어집니다.
+- 젊은 직장 동료와 부모님 예시로 연령대 차이를 대비했습니다.
 
 ---

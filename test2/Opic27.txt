@@ -1,0 +1,52 @@
+Opic27 — 문제 스크립트 (여우 MOCK TEST 27, 난이도 5~6)
+
+[Background Survey]
+1. 일 경험 없음
+2. 학생 - 아니오, 수업 등록 후 5년
+3. 독신자로서 개인 주택이나 아파트에 거주
+4. (총 8개) 영화보기, 콘서트 가기, 공연/연극 관람하기, 공원 가기, 해변가기, 카페/커피전문점 가기
+5. (총 1개) 음악감상
+6. (총 3개) 조깅, 걷기, 신체 운동을 즐기지 않음
+7. (총 2개) 국내여행, 해외여행
+
+------------------------------------------------------------
+[자기소개]
+Q1. Let's start the interview now. Tell me something about yourself.
+
+------------------------------------------------------------
+[국내여행]
+Q2. You indicated in the survey that you take vacations domestically. Tell me about a city or place you like to travel to. Why do you like going there?
+
+Q3. What do you usually do to prepare before going on a trip? What are the things you do to get ready for a trip?
+
+Q4. A lot of unexpected things can happen when we travel. Tell me about an unforgettable experience you've had while traveling. What happened? What made it so memorable for you?
+
+------------------------------------------------------------
+[의류 / 패션 (돌발)]
+Q5. Let's talk about fashion. What kinds of clothes do people typically wear in your country? What do they usually wear at work, and what do they wear at home?
+
+Q6. What kind of clothes do you usually like to wear? What are you wearing right now? Tell me about your fashion style.
+
+Q7. How have fashion and clothing changed over time? What kinds of clothes were popular when you were a child? How is fashion different now compared to the past?
+
+------------------------------------------------------------
+[음악 감상]
+Q8. You indicated in the survey that you like listening to music. What kind of music do you listen to? Who are some of your favorite musicians or composers?
+
+Q9. When did you first become interested in music? What kind of music did you first enjoy listening to, and how has your taste in music changed over the years?
+
+Q10. Can you tell me about a time when you listened to live music? When was it? Who were you with? What was the occasion? Was it memorable?
+
+------------------------------------------------------------
+[롤플레이 — 호텔 / 분실물]
+Q11. I'd like to give you a situation and ask you to act it out. You are visiting a new city and staying at a hotel. You have a free day and want to explore the city. Ask the front desk clerk three or four questions about activities or places to visit.
+
+Q12. I'm sorry, but there's a problem I need you to resolve. You left your bag in the taxi that took you to the hotel. Call the taxi company, explain the situation, describe your bag, and arrange to get it back.
+
+Q13. That's the end of the situation. Has anything similar ever happened to you? Have you ever lost an item somewhere, or misplaced something important? Talk about the situation in detail.
+
+------------------------------------------------------------
+[산업 / 직업 (돌발)]
+Q14. How do people prepare for work in your country's industries? Do they study for the job in advance, or are they trained when they join the company? Do they get job training? How has job training changed over the past five years?
+
+Q15. What is an industry or a company that people in your country are talking about these days? Why are people interested in this field, and what are they saying about it?

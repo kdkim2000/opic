@@ -1,0 +1,52 @@
+Opic24 — 문제 스크립트 (여우 MOCK TEST 24, 난이도 5~6)
+
+[Background Survey]
+1. 일 경험 없음
+2. 학생 - 아니오, 수업 등록 후 5년
+3. 독신자로서 개인 주택이나 아파트에 거주
+4. (총 8개) 영화보기, 콘서트 가기, 공연/연극 관람하기, 공원 가기, 해변가기, 카페/커피전문점 가기
+5. (총 1개) 음악감상
+6. (총 3개) 조깅, 걷기, 신체 운동을 즐기지 않음
+7. (총 2개) 국내여행, 해외여행
+
+------------------------------------------------------------
+[자기소개]
+Q1. Let's start the interview now. Tell me something about yourself.
+
+------------------------------------------------------------
+[은행 (돌발)]
+Q2. Tell me about the banks in your country. What are they like? Where are they typically located?
+
+Q3. What do you usually do when you go to the bank? Tell me about the kinds of things you do there.
+
+Q4. How have banks in your country changed over time? What were banks like when you were a child, and how are they different now?
+
+------------------------------------------------------------
+[여가 시간 (돌발)]
+Q5. Where do people in your country usually go in their free time, and what do they like to do there?
+
+Q6. How did you spend your free time in the past? How has the way you spend your free time changed over the years?
+
+Q7. Can you tell me about the last time you had some free time? What did you do? Where did you go? Who did you spend time with?
+
+------------------------------------------------------------
+[국내여행]
+Q8. You indicated in the survey that you take vacations domestically. Tell me about some of the cities or places you like to visit. Why do you enjoy going there?
+
+Q9. Tell me about a trip you took when you were a child. Where did you go? Who did you go with? What did you do?
+
+Q10. You may have experienced something unexpected while traveling. Tell me about an unforgettable experience you had during a trip. What happened? What made it so memorable?
+
+------------------------------------------------------------
+[롤플레이 — 홀리데이 파티]
+Q11. I'd like to give you a situation and ask you to act it out. Your friend invited you to a holiday party at their home. Call them and ask when the party is and what time it starts, and if you should bring anything. Ask two or three more questions about the party.
+
+Q12. I'm sorry, but there is a problem that I need you to resolve. You just had a car accident and are going to be late for the holiday party. Call your friend, let them know what happened, and discuss two or three ideas about what you should do.
+
+Q13. That's the end of the situation. Have you ever been in a situation where you made plans for a trip or a party but had to cancel at the last minute because of an emergency? Talk about the situation and how you dealt with it.
+
+------------------------------------------------------------
+[집 / 주거 (돌발)]
+Q14. I'd like to talk about where you live. How has the style of homes where you live changed over the past five or ten years? Are the homes being built today different from the homes built 10 years ago? What developments or changes have you noticed?
+
+Q15. Sometimes, the issue of having too many new homes or not enough new homes can create controversy in a community. Think of a time when a housing issue was in the news in your area. What was the issue, and why were people talking about it?

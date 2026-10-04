@@ -11,22 +11,22 @@
 
 | 항목 | 내용 | 상태 |
 | --- | --- | --- |
-| 기본 | Bread, 삼성중공업 IT 책임자, 거제 거주, 아내, 딸 은빈, 아들 수현, 장인 80세(골프), 6명 누나의 막내, 커피 애호가, Rescene | 확정 |
+| 기본 | 회사원, IT 업무, 커피 좋아함, 음악·게임·독서 취미 (개인 식별 정보 제거) | 확정 |
 | 옷 취향 | 편한 캐주얼(후드티, 청바지, 운동화), 회사는 비즈니스 캐주얼 | 임의 (필요시 수정) |
-| 자주 가는 공원 | 집 근처 바닷가 공원, 가족과 산책 | 임의 (필요시 수정) |
+| 자주 가는 공원 | 집 근처 바닷가 공원, 친구와 산책 | 임의 (필요시 수정) |
 | 공원 기억 | 가을 저녁 길거리 공연 | 임의 (필요시 수정) |
-| 호텔 | 최근 부산 해운대 호텔 (아내와), 기억에 남는 호텔은 전주 한옥 호텔 | 임의 (필요시 수정) |
+| 호텔 | 최근 부산 해운대 호텔 (친구와), 기억에 남는 호텔은 전주 한옥 호텔 | 임의 (필요시 수정) |
 | 롤플레이 | 친구 생일파티 (바), 다음 날 자격증 시험으로 불참 | 임의 (필요시 수정) |
-| 계획 변경 경험 | 장인어른과 골프 약속이 비로 취소, 스크린 골프로 변경 | 임의 (필요시 수정) |
-| 해외여행 | 가족과 베트남 다낭 (겨울), 은빈이 일정 계획 | 임의 (필요시 수정) |
+| 계획 변경 경험 | 친구와 골프 약속이 비로 취소, 스크린 골프로 변경 | 임의 (필요시 수정) |
+| 해외여행 | 친구들과 베트남 다낭 (겨울), 한 친구가 일정 계획 | 임의 (필요시 수정) |
 
 ---
 
-## Q1. 자기소개 (opic1~3과 동일)
+## Q1. 자기소개
 
 **Q:** Let's start the interview now. Tell me something about yourself.
 
-> Hi, my name is Bread. I'm **a big coffee lover**, so I guess I'll start there. **I can't really start my day without a cup of coffee**, and this morning was no different. I had one before I came to take this test, and I'm **already looking forward to** another one once it's over. I work **in IT at Samsung Heavy Industries**. I'm **in charge of** our IT systems, so my days are pretty busy. I live in an apartment with my wife, and we're **pretty much homebodies**. In my free time, I like listening to music, playing computer games, and reading. So, yeah, that's me **in a nutshell**: **coffee, my wife, and my computer**. I'm happy to be here, and I hope I do well today!
+> Hi, how's it going? I'm **a big coffee lover**, so I guess I'll start there. **I can't really start my day without a cup of coffee**, and this morning was no different. I had one before I came to take this test, and I'm **already looking forward to** another one once it's over. I work **in IT**, and my days are pretty busy. I live in an apartment, and I'm **pretty much a homebody**. In my free time, I like listening to music, playing computer games, and reading. So, yeah, that's me **in a nutshell**: **coffee, music, and my computer**. I'm happy to be here, and I hope I do well today!
 
 ---
 
@@ -44,7 +44,7 @@
 
 **Q:** What clothes do you like to wear? What do you usually wear? What are you wearing now?
 
-> **I like to keep it simple and comfortable.** **On weekends, I usually wear a hoodie, jeans, and sneakers.** **I'm not a fashion guy at all**, **so I just go for comfort**. **At work, we have a business casual dress code**, so **I wear a collared shirt and slacks**. **Today, I'm wearing a light blue shirt** and **a navy jacket**, **since it's a fall day**. **I wanted to look decent for this test!** **I also wore my most comfortable shoes**, **because I didn't want to be nervous and uncomfortable at the same time**. **My wife says I wear the same thing every day.** **She's probably right**.
+> **I like to keep it simple and comfortable.** **On weekends, I usually wear a hoodie, jeans, and sneakers.** **I'm not a fashion guy at all**, **so I just go for comfort**. **At work, we have a business casual dress code**, so **I wear a collared shirt and slacks**. **Today, I'm wearing a light blue shirt** and **a navy jacket**, **since it's a fall day**. **I wanted to look decent for this test!** **I also wore my most comfortable shoes**, **because I didn't want to be nervous and uncomfortable at the same time**. **My friends say I wear the same thing every day.** **She's probably right**.
 
 - 핵심: `keep it simple`, `go for comfort`, `dress code`, `look decent`
 - 오늘 입은 옷은 실제 옷으로 바꾸세요.
@@ -55,10 +55,9 @@
 
 **Q:** Fashion trends change all the time. What kinds of clothes were popular when you were younger, and what kinds of clothes are popular now?
 
-> **When I was younger, baggy jeans were super popular.** **Everyone wore big sweatshirts with huge logos**, and **sneakers with thick soles**. **I remember begging my sisters to let me borrow their clothes.** **I had six older sisters, so I got a lot of hand-me-downs!** **It wasn't exactly cool**. **These days, the trends are different.** **Skinny jeans came and went**, and **now we've come full circle**, because **baggy and oversized are back again!** **Also, people love athleisure**, like **yoga pants and running jackets**, **even outside the gym**. **It's funny how fashion always repeats itself.** **I'm just glad my old clothes are back in style!**
+> **When I was younger, baggy jeans were super popular.** **Everyone wore big sweatshirts with huge logos**, and **sneakers with thick soles**. **I remember begging my friends to let me borrow their clothes.** **I even got a lot of hand-me-downs!** **It wasn't exactly cool**. **These days, the trends are different.** **Skinny jeans came and went**, and **now we've come full circle**, because **baggy and oversized are back again!** **Also, people love athleisure**, like **yoga pants and running jackets**, **even outside the gym**. **It's funny how fashion always repeats itself.** **I'm just glad my old clothes are back in style!**
 
 - 핵심: `hand-me-downs`, `come full circle`, `back in style`, `repeats itself`
-- 6명의 누나 설정이 들어가 있어서 일관성이 좋습니다.
 
 ---
 
@@ -66,7 +65,7 @@
 
 **Q:** Please describe the park you often go to. Where is it, and what does it look like?
 
-> **The park I often go to is a seaside park** **near my apartment** here in Geoje. **It's about a 10-minute walk from my home.** **It's a long, narrow park along the coast**, with **a walking path**, **big old trees**, and **lots of benches** facing the sea. **In the middle, there's a small playground** and **a little plaza** where **people exercise or have picnics**. **From the benches, you can see ships and islands.** **In the spring, the cherry blossoms are gorgeous.** **I go there about once a week**, **usually in the evening with my wife.** **We take a walk and chat.** **It's the perfect place to unwind** after a long day at work.
+> **The park I often go to is a seaside park** **near my apartment**. **It's about a 10-minute walk from my home.** **It's a long, narrow park along the coast**, with **a walking path**, **big old trees**, and **lots of benches** facing the sea. **In the middle, there's a small playground** and **a little plaza** where **people exercise or have picnics**. **From the benches, you can see ships and islands.** **In the spring, the cherry blossoms are gorgeous.** **I go there about once a week**, **usually in the evening with a friend.** **We take a walk and chat.** **It's the perfect place to unwind** after a long day at work.
 
 - 핵심: `a seaside park`, `a walking path`, `facing the sea`, `unwind`
 
@@ -76,10 +75,9 @@
 
 **Q:** How did you first become interested in going to parks? How has your interest in going to parks changed over time?
 
-> **I first got into parks when my kids were little.** **Eunbin and Suhyun had so much energy**, and **our apartment was too small for them to run around.** **So every weekend, we took them to the park** to **burn off their energy**. **At first, I only went because I had to.** **I'd sit on a bench with my coffee** and **watch them play**. **But over time, I started to enjoy it myself.** **The fresh air and the quiet** were **so relaxing**. **Now the kids are older**, **so I mostly go with my wife.** **Instead of watching the kids, we walk and talk.** **My interest has changed from "a place for the kids" to "my own place to recharge".** **I think it'll keep changing as I get older.**
+> **I first got into parks when I was a kid.** **I had so much energy**, and **our house was too small for me to run around.** **So every weekend, my parents took me to the park** to **burn off my energy**. **At first, I only went because I had to.** **I'd sit on a bench** and **watch the other kids play**. **But over time, I started to enjoy it myself.** **The fresh air and the quiet** were **so relaxing**. **Now I'm older**, **so I mostly go with a friend.** **Instead of playing, we walk and talk.** **My interest has changed from "a place to run around" to "my own place to recharge".** **I think it'll keep changing as I get older.**
 
 - 핵심: `get into ~`, `burn off energy`, `over time`, `recharge`
-- 아이들이 어렸을 때라는 시기는 opic3 Q13과 같은 설정입니다.
 
 ---
 
@@ -87,7 +85,7 @@
 
 **Q:** Tell me about one memorable experience you had at a park. What happened, and why was it memorable?
 
-> **One experience I'll never forget happened last fall.** **My wife and I were taking our usual evening walk** when **we heard music coming from the plaza.** **A small crowd had gathered**, and **a group of amateur musicians was playing live.** **They were singing old Korean pop songs**, and **people were clapping along.** **We sat on a bench** with **two cups of hot coffee**, and **we just listened.** **Then suddenly, the singer pointed at us** and **said, "Come on up and dance!"** **I froze.** **I'm the least dancy person in the world.** **But my wife grabbed my hand**, and **before I knew it, I was in front of everyone.** **I danced like a robot**, **and the crowd went wild!** **I was so embarrassed**, **but it was a blast.** **It was memorable because it was so unexpected**, and **my wife still has the video**. **She shows it to everyone!**
+> **One experience I'll never forget happened last fall.** **My friend and I were taking our usual evening walk** when **we heard music coming from the plaza.** **A small crowd had gathered**, and **a group of amateur musicians was playing live.** **They were singing old Korean pop songs**, and **people were clapping along.** **We sat on a bench** with **two cups of hot coffee**, and **we just listened.** **Then suddenly, the singer pointed at us** and **said, "Come on up and dance!"** **I froze.** **I'm the least dancy person in the world.** **But my friend grabbed my hand**, and **before I knew it, I was in front of everyone.** **I danced like a robot**, **and the crowd went wild!** **I was so embarrassed**, **but it was a blast.** **It was memorable because it was so unexpected**, and **my friend still has the video**. **She shows it to everyone!**
 
 - 핵심: `clap along`, `Come on up!`, `before I knew it`, `went wild`, `it was a blast`
 
@@ -107,7 +105,7 @@
 
 **Q:** Can you tell me about the last time you stayed at a hotel? Where did you stay, and what did you do at the hotel?
 
-> **The last time I stayed at a hotel was in Busan**, **about two months ago.** **My wife and I took a weekend trip** to **Haeundae Beach.** **We stayed at a hotel with an ocean view.** **When we checked in, the room was on a high floor**, **and the view was amazing.** **I just stood at the window for a few minutes.** **After we dropped off our bags**, **we went out to eat seafood** and **walk on the beach.** **Back at the hotel, we spent time at the rooftop pool**, which was **really relaxing.** **The next morning, we had a big breakfast buffet**, and **I had three cups of coffee.** **Then we checked out.** **It was short, but it was just what we needed.**
+> **The last time I stayed at a hotel was in Busan**, **about two months ago.** **A friend and I took a weekend trip** to **Haeundae Beach.** **We stayed at a hotel with an ocean view.** **When we checked in, the room was on a high floor**, **and the view was amazing.** **I just stood at the window for a few minutes.** **After we dropped off our bags**, **we went out to eat seafood** and **walk on the beach.** **Back at the hotel, we spent time at the rooftop pool**, which was **really relaxing.** **The next morning, we had a big breakfast buffet**, and **I had three cups of coffee.** **Then we checked out.** **It was short, but it was just what we needed.**
 
 - 핵심: `check in / check out`, `ocean view`, `drop off our bags`, `just what we needed`
 
@@ -117,7 +115,7 @@
 
 **Q:** Tell me about a memorable hotel you stayed at. Which hotel was it, and why was that hotel special to you?
 
-> **A hotel I'll never forget is a hanok hotel in Jeonju.** **A hanok is a traditional Korean house**, **with a wooden floor and paper doors.** **I stayed there with my wife a few years ago.** **It was totally different from a normal hotel.** **The room had a heated floor called "ondol"**, **so we slept on thick blankets on the floor.** **I thought I wouldn't sleep well**, **but I slept like a baby!** **In the morning, the owner served us a traditional breakfast** **in the courtyard**, with **rice, soup, and lots of side dishes.** **We drank hot tea and listened to the birds.** **It felt like we'd gone back in time.** **It was special to me because it was so peaceful**, and **it made me appreciate Korean culture.**
+> **A hotel I'll never forget is a hanok hotel in Jeonju.** **A hanok is a traditional Korean house**, **with a wooden floor and paper doors.** **I stayed there with a friend a few years ago.** **It was totally different from a normal hotel.** **The room had a heated floor called "ondol"**, **so we slept on thick blankets on the floor.** **I thought I wouldn't sleep well**, **but I slept like a baby!** **In the morning, the owner served us a traditional breakfast** **in the courtyard**, with **rice, soup, and lots of side dishes.** **We drank hot tea and listened to the birds.** **It felt like we'd gone back in time.** **It was special to me because it was so peaceful**, and **it made me appreciate Korean culture.**
 
 - 핵심: `hanok`, `ondol`, `slept like a baby`, `gone back in time`, `appreciate`
 
@@ -149,12 +147,11 @@
 
 **Q:** Have you ever been in a situation where you had to cancel or change a plan because something came up? What was the situation, and how did you solve the problem?
 
-> **Yes, I have.** **A few months ago, my father-in-law and I made plans to play golf together.** **He's 80, but he's a better golfer than I am!** **We booked a tee time and I was really looking forward to it.** **But the night before, it started pouring rain**, and **the forecast said it wouldn't stop.** **I called him early in the morning**, and **he said, "A little rain never hurt anyone!"** **But I knew we couldn't play in that weather**, **and I didn't want him to catch a cold at his age.**
+> **Yes, I have.** **A few months ago, a friend and I made plans to play golf together.** **He's a much better golfer than I am!** **We booked a tee time and I was really looking forward to it.** **But the night before, it started pouring rain**, and **the forecast said it wouldn't stop.** **I called him early in the morning**, and **he said, "A little rain never hurt anyone!"** **But I knew we couldn't play in that weather**, **and I didn't want either of us to catch a cold.**
 >
 > **So I suggested a plan B**: **screen golf!** **It's an indoor golf simulator**, and **it's very popular in Korea.** **At first, he wasn't thrilled**, **but he agreed.** **We ended up having a great time**, **and he beat me by ten strokes.** **Afterward, we had lunch together.** **It turned out to be a better day than I'd expected.** **Sometimes plan B is even better than plan A.**
 
 - 핵심: `something came up`, `plan B`, `pouring rain`, `ended up -ing`, `turned out to be ~`
-- 장인어른(80세, 골프)이 등장해서 opic3 Q5와 이어집니다.
 
 ---
 
@@ -162,7 +159,7 @@
 
 **Q:** You indicated in the survey that you take vacations internationally. How has traveling abroad changed over the years? Is it easier or more difficult to travel compared to the past?
 
-> **I think traveling abroad is a lot easier now.** **When I took my first trip abroad, I had to buy paper tickets**, **carry a thick guidebook**, and **exchange cash at the airport.** **These days, I can do almost everything on my phone.** **I book flights and hotels online**, **use a translation app**, and **pay with my card.** **Plus, there are more cheap flights**, **so more people can afford to travel.** **Last winter, my family and I went to Da Nang, in Vietnam**, **and we planned the entire trip on our phones.**
+> **I think traveling abroad is a lot easier now.** **When I took my first trip abroad, I had to buy paper tickets**, **carry a thick guidebook**, and **exchange cash at the airport.** **These days, I can do almost everything on my phone.** **I book flights and hotels online**, **use a translation app**, and **pay with my card.** **Plus, there are more cheap flights**, **so more people can afford to travel.** **Last winter, my friends and I went to Da Nang, in Vietnam**, **and we planned the entire trip on our phones.**
 >
 > **On the other hand, there are some downsides.** **Popular places get really crowded.** **Prices have gone up**, **and airports are busy.** **Also, because everyone posts photos on social media**, **it's harder to find hidden gems.** **But overall, I'd say it's easier**, **and it's a lot more fun.**
 
@@ -176,7 +173,7 @@
 
 > **There are a few things that are important when people travel abroad.** **First, safety.** **People want to feel safe, so they buy travel insurance** and **keep copies of their passports.** **Second, food.** **Everyone wants to try the local specialties.** **Third, sightseeing.** **People are interested in seeing famous landmarks**, **beautiful beaches**, and **old temples or castles.** **Some people also enjoy local markets and festivals.**
 >
-> **As for what travelers should do, I'd say they should respect the local culture.** **Learn a few basic phrases**, **like "hello" and "thank you".** **It goes a long way.** **It's also a good idea to plan ahead.** **My daughter Eunbin is great at this.** **For our Da Nang trip, she made a detailed schedule**, **and everything went smoothly.** **And finally, stay open-minded.** **Things won't always go as planned**, **but that's part of the adventure.**
+> **As for what travelers should do, I'd say they should respect the local culture.** **Learn a few basic phrases**, **like "hello" and "thank you".** **It goes a long way.** **It's also a good idea to plan ahead.** **One of my friends is great at this.** **For our Da Nang trip, she made a detailed schedule**, **and everything went smoothly.** **And finally, stay open-minded.** **Things won't always go as planned**, **but that's part of the adventure.**
 
 - 핵심: `travel insurance`, `local specialties`, `landmarks`, `It goes a long way`, `plan ahead`, `go smoothly`
-- 은빈이 계획형이라는 opic2 Q14의 설정과 이어집니다.
+- Q14의 다낭 여행 이야기와 이어집니다.

@@ -1,0 +1,52 @@
+Opic26 — 문제 스크립트 (여우 MOCK TEST 26, 난이도 5~6)
+
+[Background Survey]
+1. 일 경험 없음
+2. 학생 - 아니오, 수업 등록 후 5년
+3. 독신자로서 개인 주택이나 아파트에 거주
+4. (총 8개) 영화보기, 콘서트 가기, 공연/연극 관람하기, 공원 가기, 해변가기, 카페/커피전문점 가기
+5. (총 1개) 음악감상
+6. (총 3개) 조깅, 걷기, 신체 운동을 즐기지 않음
+7. (총 2개) 국내여행, 해외여행
+
+------------------------------------------------------------
+[자기소개]
+Q1. Let's start the interview now. Tell me something about yourself.
+
+------------------------------------------------------------
+[해변 가기]
+Q2. Tell me about your favorite beach. What does it look like? Where is it, and how often do you go there?
+
+Q3. When you go to the beach, what do you usually do, and who do you usually go with?
+
+Q4. When was the last time you went to the beach? What did the beach look like? What did you do? Who did you go with?
+
+------------------------------------------------------------
+[집 / 거주]
+Q5. I'd like to talk about where you live. Tell me about your home. What does it look like? How many rooms does it have?
+
+Q6. Can you tell me about some problems you have had in your home? For example, something broke or someone you lived with didn't cooperate with you.
+
+Q7. Pick one of the problems you mentioned above and describe it in detail. What was the problem? What caused it, and how did you handle it?
+
+------------------------------------------------------------
+[포장 / 배달 음식 (돌발)]
+Q8. Tell me about your favorite takeout or delivery restaurant. What kind of food do they offer? What is the place like, and why do you like it?
+
+Q9. Tell me about the last time you ordered food from a takeout or delivery restaurant. What did you order, and how was the experience?
+
+Q10. Tell me about a special time when you got food from a takeout or delivery restaurant, such as for a party. What was the occasion? How did you get the food? Was it a memorable experience?
+
+------------------------------------------------------------
+[롤플레이 — 건강식품 가게]
+Q11. I'd like to give you a situation and ask you to act it out. A new health food store recently opened near your home. Call the store and ask three or four questions to learn more about what they offer.
+
+Q12. I'm sorry, but there's a problem I need you to resolve. You bought something at the store, but you just found a problem with it. Call the store, tell them about the issue, and discuss a solution.
+
+Q13. That's the end of the situation. Can you tell me about a memorable meal you had with your friends or colleagues? What did you eat? Who were you with? Where did you eat? What made it memorable?
+
+------------------------------------------------------------
+[국가 간 관계 (돌발)]
+Q14. Tell me about a change in the relationship between your country and another country. It could be related to politics, the economy, sports, or culture.
+
+Q15. Can you talk about a historic event that changed the relationship between your country and a neighboring country? For example, a treaty between the two countries, a cultural event, or the visit of a leader from another country.

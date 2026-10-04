@@ -130,13 +130,26 @@ const badge = (st) => (st && st !== "new" ? `<span class="badge ${st}">${STATUS[
 async function viewHome() {
   const prog = Object.fromEntries((await db.allProgress()).map((p) => [p.key, p]));
   const hardCount = Object.values(prog).filter((p) => p.status === "hard").length;
-  $app.innerHTML = `<h1>OPIc 연습</h1>` + DATA.sets.map((s) => {
-    const qs = s.groups.flatMap((g) => g.questions);
-    const done = qs.filter((q) => prog[keyOf(s.id, q.no)]?.status === "done").length;
-    return `<div class="card"><div class="row spread"><b>opic${s.id}</b><span class="muted">${done}/${qs.length} 완료</span></div>
-      <div class="bar"><i style="width:${(done / qs.length) * 100}%"></i></div>
+  const seriesOf = (s) => s.series || (s.id >= 16 ? "latest" : "legacy");
+  const section = (title, series, collapsible) => {
+    const sets = DATA.sets.filter((s) => seriesOf(s) === series);
+    if (!sets.length) return "";
+    let tDone = 0, tAll = 0;
+    const cards = sets.map((s) => {
+      const qs = s.groups.flatMap((g) => g.questions);
+      const done = qs.filter((q) => prog[keyOf(s.id, q.no)]?.status === "done").length;
+      tDone += done; tAll += qs.length;
+      return `<div class="card"><div class="row spread"><b>opic${s.id}</b><span class="muted">${done}/${qs.length} 완료</span></div>
+      <div class="bar"><i style="width:${qs.length ? (done / qs.length) * 100 : 0}%"></i></div>
       <div class="row"><a class="btn primary" href="#/exam/${s.id}">실전 모드</a><a class="btn" href="#/set/${s.id}">학습 모드</a></div></div>`;
-  }).join("") + `<div class="card"><a class="btn" href="#/hard">어려움 문항 모아 연습 (${hardCount})</a>
+    }).join("");
+    const head = `<span class="sec-title">${esc(title)}</span><span class="muted sec-sum">${sets.length}세트 · ${tDone}/${tAll} 완료</span>`;
+    return collapsible
+      ? `<details class="series"><summary>${head}</summary>${cards}</details>`
+      : `<section class="series"><div class="sec-head">${head}</div>${cards}</section>`;
+  };
+  $app.innerHTML = `<h1>OPIc 연습</h1>` + section("최신 문제 (opic16~30)", "latest", false) +
+    section("이전 문제 (opic1~8)", "legacy", true) + `<div class="card"><a class="btn" href="#/hard">어려움 문항 모아 연습 (${hardCount})</a>
     <p class="muted">녹음과 학습 기록은 이 기기 안에만 저장됩니다. 브라우저 데이터를 지우면 함께 삭제됩니다.</p></div>`;
 }
 

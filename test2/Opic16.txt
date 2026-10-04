@@ -1,0 +1,52 @@
+Opic16 — 문제 스크립트 (여우 모의고사 16, 난이도 5~6 / 최신 문제 업데이트판)
+
+[Background Survey]
+1. 일 경험 없음
+2. 학생 - 아니오, 수업 등록 후 5년
+3. 독신자로서 개인 주택이나 아파트에 거주
+4. (총 8개) 영화보기, 콘서트 가기, 공연/연극 관람하기, 공원 가기, 해변가기, 카페/커피전문점 가기
+5. (총 1개) 음악감상
+6. (총 3개) 조깅, 걷기, 신체 운동을 즐기지 않음
+7. (총 2개) 국내여행, 해외여행
+
+------------------------------------------------------------
+[자기소개]
+Q1. Let's start the interview now. Tell me something about yourself.
+
+------------------------------------------------------------
+[건강 (돌발)]
+Q2. What kinds of healthy foods do people eat in your country? What are these foods, and where do people buy them?
+
+Q3. What do you do to stay healthy? Tell me about the things you do to maintain your health.
+
+Q4. How has the way people maintain their health changed? What did people do to stay healthy when you were a child, and what do they do now?
+
+------------------------------------------------------------
+[카페 / 커피전문점]
+Q5. You indicated in the survey that you go to coffee shops. Tell me about a coffee shop you like to visit. What is special about that café or coffee shop?
+
+Q6. What do you usually do when you're at a coffee shop? Do you read, eat something, or have meetings?
+
+Q7. Share a memorable experience you had at a coffee shop. What happened? How did you deal with the situation?
+
+------------------------------------------------------------
+[음악 감상]
+Q8. You indicated in the survey that you like to listen to music. What kind of music do you listen to? Who is your favorite musician or composer?
+
+Q9. How did you first become interested in listening to music? What kinds of music did you like listening to, and how has your taste in music changed over time?
+
+Q10. Tell me about a time you listened to live music. Was it at a concert? Who did you go with? Was it memorable?
+
+------------------------------------------------------------
+[롤플레이 — 미용실]
+Q11. You have an important meeting in two days, so you want to get a haircut. Call the hair salon and ask three or four questions to make an appointment no later than tomorrow afternoon.
+
+Q12. You just got your hair cut, but you are not happy with it. You think the haircut was done badly. Call the hair salon, explain the situation, and ask if there is a solution.
+
+Q13. Do you have a memorable experience at a hair salon? What happened? What made it so memorable?
+
+------------------------------------------------------------
+[집 / 거주]
+Q14. How do you deal with problems at home? How do your parents handle these kinds of problems? What are the differences between how you and your parents solve problems at home?
+
+Q15. What are some common problems people face when renting a home? Why do these problems occur, and how do people solve them?

@@ -1,0 +1,52 @@
+Opic20 — 문제 스크립트 (여우 MOCK TEST 20, 난이도 5~6)
+
+[Background Survey]
+1. 일 경험 없음
+2. 학생 - 아니오, 수업 등록 후 5년
+3. 독신자로서 개인 주택이나 아파트에 거주
+4. (총 8개) 영화보기, 콘서트 가기, 공연/연극 관람하기, 공원 가기, 해변가기, 카페/커피전문점 가기
+5. (총 1개) 음악감상
+6. (총 3개) 조깅, 걷기, 신체 운동을 즐기지 않음
+7. (총 2개) 국내여행, 해외여행
+
+------------------------------------------------------------
+[자기소개]
+Q1. Let's start the interview now. Tell me something about yourself.
+
+------------------------------------------------------------
+[집 / 거주]
+Q2. Let's talk about where you live. Could you describe your home? What does it look like, and how many rooms does it have?
+
+Q3. What do you usually do at home? How does your routine differ on weekdays compared to weekends? Tell me about your typical day.
+
+Q4. Tell me about the home you lived in as a child. How is it different from the home you live in now?
+
+------------------------------------------------------------
+[영화 보기]
+Q5. You indicated in the survey that you go to the movies. What kinds of movies do you like to watch? Why do you like those movies?
+
+Q6. Tell me about the last time you went to the movies. What did you do before and after the movie?
+
+Q7. Share a story about an actor or actress you saw in the news. What was the news about? Was it interesting? Tell me the details of what happened.
+
+------------------------------------------------------------
+[모임·축하 (돌발)]
+Q8. Tell me about the gatherings and celebrations where you live. What are they like?
+
+Q9. Can you tell me about a gathering or a celebration that you attended? Where was it held? What did you do? Who did you meet there?
+
+Q10. You might experience something unexpected at a gathering or a celebration. Do you have a memorable experience from a gathering or celebration? What happened?
+
+------------------------------------------------------------
+[롤플레이 — 항공편 지연]
+Q11. I'd like to give you a situation and ask you to act it out. You are at the airport and just found out that your flight is delayed by two hours. At the airline counter, ask three or four questions about the delay.
+
+Q12. I'm sorry, but there's a problem I need you to resolve. Your flight was delayed, so you can't attend an important meeting today. Call your client and leave a message about the situation. Suggest two or three alternative options.
+
+Q13. That's the end of the situation. You may have had problems while you were on a trip. Talk about a problem you had while traveling. What was the problem, and how did you deal with the situation?
+
+------------------------------------------------------------
+[식당 / 외식 (돌발)]
+Q14. Many restaurants are changing their menus to appeal to health-conscious customers. Tell me about some of the changes restaurants are making.
+
+Q15. You know what to expect from menus in chain restaurants, but small local independent restaurants have their own unique menus. Tell me about your experience at a chain restaurant and a local independent restaurant.

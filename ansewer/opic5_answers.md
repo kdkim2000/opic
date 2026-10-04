@@ -1,6 +1,6 @@
 # OPIc 모의고사 5 — 내 답변 스크립트 (최종본 v2)
 
-목표는 IH (레벨 5-5)입니다. 쉬운 표현과 미국인이 실제 쓰는 구어체로, 유창하게 이어 말하는 것이 기준입니다. 자기소개(Q1)는 opic1~opic3과 동일합니다.
+목표는 IH (레벨 5-5)입니다. 쉬운 표현과 미국인이 실제 쓰는 구어체로, 유창하게 이어 말하는 것이 기준입니다. 자기소개(Q1)는 모든 세트 동일합니다.
 
 - 답변 길이는 약 60~80초(8~12문장)입니다.
 - 다 외우지 말고 **굵은 표현**(뼈대)만 외우세요.
@@ -12,23 +12,22 @@
 
 | 항목 | 내용 | 상태 |
 | --- | --- | --- |
-| 기본 | Bread, 삼성중공업 IT 책임자, 거제 거주, 25층 아파트 3층, 아내, 딸 은빈, 아들 수현, 커피 애호가, Rescene 팬 | 확정 |
-| 가족 | 6명의 누나가 있는 막내, 장인어른 80세 (골프) | 확정 |
+| 기본 | 회사원, IT 업무, 커피 좋아함, 음악·게임·독서 취미 (개인 식별 정보 제거) | 확정 |
 | 은행 | 앱 위주로 이용, 가끔 지점 방문 | 임의 (필요시 수정) |
 | 지형 | 한국 지형 소개, 제주 성산일출봉 일출 | 임의 (필요시 수정) |
-| 첫 카페 | 고등학생 때 큰누나와 | 임의 (필요시 수정) |
+| 첫 카페 | 고등학생 때 나이 많은 친구와 | 임의 (필요시 수정) |
 | 기억에 남는 카페 경험 | 노트북에 커피를 쏟음 | 임의 (필요시 수정) |
-| 롤플레이 | 이모 집 봐주기, 열쇠 분실 | 임의 (필요시 수정) |
-| 못 지킨 약속 | 아들 수현과 야구장 약속, 독감 | 임의 (필요시 수정) |
+| 롤플레이 | 친척 집 봐주기, 열쇠 분실 | 임의 (필요시 수정) |
+| 못 지킨 약속 | 친구 아이와 야구장 약속, 독감 | 임의 (필요시 수정) |
 | 음악 기기 | 무선 이어폰, 노이즈 캔슬링 헤드폰, 블루투스 스피커 | 임의 (필요시 수정) |
 
 ---
 
-## Q1. 자기소개 (opic1~3과 동일)
+## Q1. 자기소개
 
 **Q:** Let's start the interview now. Tell me something about yourself.
 
-> Hi, my name is Bread. I'm **a big coffee lover**, so I guess I'll start there. **I can't really start my day without a cup of coffee**, and this morning was no different. I had one before I came to take this test, and I'm **already looking forward to** another one once it's over. I work **in IT at Samsung Heavy Industries**. I'm **in charge of** our IT systems, so my days are pretty busy. I live in an apartment with my wife, and we're **pretty much homebodies**. In my free time, I like listening to music, playing computer games, and reading. So, yeah, that's me **in a nutshell**: **coffee, my wife, and my computer**. I'm happy to be here, and I hope I do well today!
+> Hi, how's it going? I'm **a big coffee lover**, so I guess I'll start there. **I can't really start my day without a cup of coffee**, and this morning was no different. I had one before I came to take this test, and I'm **already looking forward to** another one once it's over. I work **in IT**, and my days are pretty busy. I live in an apartment, and I'm **pretty much a homebody**. In my free time, I like listening to music, playing computer games, and reading. So, yeah, that's me **in a nutshell**: **coffee, music, and my computer**. I'm happy to be here, and I hope I do well today!
 
 ---
 
@@ -36,7 +35,7 @@
 
 **Q:** Tell me about banks in your country. Where are they located, and what do they look like?
 
-> **Banks are everywhere in Korea.** **You can find one in almost every neighborhood**, **usually on a main street** or **right next to a subway station**. **Most of them are in tall, modern buildings** with **big glass windows**, and **the bank's logo is on the front**, so **they're easy to spot**. **Inside, it's clean and bright**, and **there's a row of counters** with **tellers** and **a waiting area with comfortable chairs**. **Next to the entrance, there's usually a small room with ATMs**, which is **open 24 hours**. **In my city, Geoje**, **the banks are mostly near the downtown area** and **the shipyard**. **Honestly, banks look a lot like cafes these days**: **they're stylish and welcoming**, **and some even have coffee machines**!
+> **Banks are everywhere in Korea.** **You can find one in almost every neighborhood**, **usually on a main street** or **right next to a subway station**. **Most of them are in tall, modern buildings** with **big glass windows**, and **the bank's logo is on the front**, so **they're easy to spot**. **Inside, it's clean and bright**, and **there's a row of counters** with **tellers** and **a waiting area with comfortable chairs**. **Next to the entrance, there's usually a small room with ATMs**, which is **open 24 hours**. **In my city**, **the banks are mostly near the downtown area** and **the port**. **Honestly, banks look a lot like cafes these days**: **they're stylish and welcoming**, **and some even have coffee machines**!
 
 - 핵심: `right next to ~`, `easy to spot`, `tellers`, `ATMs`, `welcoming`
 
@@ -56,7 +55,7 @@
 
 **Q:** How have banks changed over the years? How were banks when you were young, and how are they now?
 
-> **Banks have changed a lot.** **When I was young, everything was done in person.** **I remember going with my mom** and **waiting in long lines** just to **deposit money**. **People used passbooks**, and **they had to go to the bank** to **update them**. **Banks were also only open during the day**, so **you had to take time off work.** **Now, it's completely different.** **We can transfer money in seconds** with **our phones**. **There are even internet-only banks** that **don't have any branches!** **Because of that, a lot of local branches have closed.** **On the plus side, it's much faster and more convenient.** **On the downside, older people sometimes struggle** with **the new technology**. **I think it's a big change for the better**, **but I do miss the old days a little**.
+> **Banks have changed a lot.** **When I was young, everything was done in person.** **I remember going with my parents** and **waiting in long lines** just to **deposit money**. **People used passbooks**, and **they had to go to the bank** to **update them**. **Banks were also only open during the day**, so **you had to take time off work.** **Now, it's completely different.** **We can transfer money in seconds** with **our phones**. **There are even internet-only banks** that **don't have any branches!** **Because of that, a lot of local branches have closed.** **On the plus side, it's much faster and more convenient.** **On the downside, older people sometimes struggle** with **the new technology**. **I think it's a big change for the better**, **but I do miss the old days a little**.
 
 - 핵심: `in person`, `passbook`, `internet-only banks`, `On the plus side / On the downside`, `struggle with ~`
 
@@ -66,10 +65,9 @@
 
 **Q:** Tell me about your country's geography. Are there many mountains, rivers, or lakes in your country?
 
-> **Korea is a small country**, **but it has a lot of variety**. **About 70 percent of the country is covered with mountains**, so **wherever you go, you can see a mountain in the distance**. **We also have several major rivers**, like **the Han River**, which **runs through Seoul**, and **the Nakdong River** in the south. **We don't have many big lakes**, though. **Most of them are man-made reservoirs.** **On three sides, we're surrounded by the sea**, and **we have thousands of islands.** **I live on one of them: Geoje, the second-largest island in Korea.** **So honestly, I'm lucky to be surrounded by both the sea and the mountains.** **That's one of the things I love most about my country.**
+> **Korea is a small country**, **but it has a lot of variety**. **About 70 percent of the country is covered with mountains**, so **wherever you go, you can see a mountain in the distance**. **We also have several major rivers**, like **the Han River**, which **runs through Seoul**, and **the Nakdong River** in the south. **We don't have many big lakes**, though. **Most of them are man-made reservoirs.** **On three sides, we're surrounded by the sea**, and **we have thousands of islands.** **I live in a small city by the sea**, **with mountains right behind it.** **So honestly, I'm lucky to be surrounded by both the sea and the mountains.** **That's one of the things I love most about my country.**
 
 - 핵심: `covered with ~`, `runs through ~`, `man-made`, `surrounded by ~`
-- 거제도는 제주도 다음으로 큰 섬이라는 사실을 사용했습니다.
 
 ---
 
@@ -77,7 +75,7 @@
 
 **Q:** What are some typical outdoor activities that people in your country do in those places? What do people usually do there?
 
-> **Koreans love outdoor activities.** **Hiking is by far the most popular**, since **we have so many mountains**. **On weekends, trails are packed with people** in **colorful hiking gear**, especially in the fall. **After a hike, people usually have a bowl of noodles** or **a cup of makgeolli**. **Near rivers, people go cycling** or **have picnics**. **For example, along the Han River, you can rent a bike** and **order fried chicken** right on the grass! **In the south, where I live, people go fishing** and **take boat trips between the islands**. **In the winter, a lot of people go skiing or snowboarding.** **Camping has also become really trendy** recently. **No matter the season, there's always something fun to do outside.**
+> **Koreans love outdoor activities.** **Hiking is by far the most popular**, since **we have so many mountains**. **On weekends, trails are packed with people** in **colorful hiking gear**, especially in the fall. **After a hike, people usually have a bowl of noodles** or **a cup of makgeolli**. **Near rivers, people go cycling** or **have picnics**. **For example, along the Han River, you can rent a bike** and **order fried chicken** right on the grass! **In the south, people go fishing** and **take boat trips between the islands**. **In the winter, a lot of people go skiing or snowboarding.** **Camping has also become really trendy** recently. **No matter the season, there's always something fun to do outside.**
 
 - 핵심: `by far the most popular`, `trails are packed with ~`, `go cycling`, `trendy`
 
@@ -87,7 +85,7 @@
 
 **Q:** Tell me about a special landscape you have seen. What was special about it? When did you see it, and what did you do there?
 
-> **One landscape I'll never forget is the sunrise from Seongsan Ilchulbong**, **a famous volcanic peak on Jeju Island.** **I went there with my wife** a few years ago. **We woke up at 4 a.m.**, **which was brutal**, and **we started climbing in the dark**. **It was cold and windy**, and **I was complaining the whole way up**. **But when we reached the top, everything changed.** **The sky slowly turned orange and pink**, and **then the sun rose over the ocean**. **The sea below us was glowing**. **I was speechless.** **There were hundreds of people at the top**, **and everyone went completely quiet.** **I took a lot of photos**, **but the best moment was just standing there**, **holding a hot cup of coffee** from a thermos, of course. **It was worth every minute of the early wake-up call.**
+> **One landscape I'll never forget is the sunrise from Seongsan Ilchulbong**, **a famous volcanic peak on Jeju Island.** **I went there with my friend** a few years ago. **We woke up at 4 a.m.**, **which was brutal**, and **we started climbing in the dark**. **It was cold and windy**, and **I was complaining the whole way up**. **But when we reached the top, everything changed.** **The sky slowly turned orange and pink**, and **then the sun rose over the ocean**. **The sea below us was glowing**. **I was speechless.** **There were hundreds of people at the top**, **and everyone went completely quiet.** **I took a lot of photos**, **but the best moment was just standing there**, **holding a hot cup of coffee** from a thermos, of course. **It was worth every minute of the early wake-up call.**
 
 - 핵심: `volcanic peak`, `brutal`, `I was speechless`, `worth every minute`
 
@@ -103,14 +101,13 @@
 
 ---
 
-## Q9. 처음 간 커피숍 (고등학생 때 큰누나와)
+## Q9. 처음 간 커피숍 (고등학생 때 친구와)
 
 **Q:** Tell me about the first time you went to a coffee shop. When was it, and who did you go with? What do you remember the most about it?
 
-> **The first time I went to a coffee shop was in high school.** **I went with my oldest sister**, **who was in college at the time**. **She said**, "**Come on, little brother, I'll buy you a drink!**" **I felt so grown up.** **We walked into this tiny cafe** that **smelled amazing**, and **I had no idea what to order.** **My sister ordered me a mocha**, **which had whipped cream and chocolate syrup on top.** **I thought it was a dessert!** **It was sweet, and I loved it.** **But then she ordered an americano for herself**, and **I took a sip**. **It was so bitter that I made a terrible face**. **She laughed so hard.** **What I remember the most is how she treated me like an adult.** **Funny enough, now I drink black coffee every day.** **That day was where it all began.**
+> **The first time I went to a coffee shop was in high school.** **I went with an older friend**, **who was in college at the time**. **She said**, "**Come on, kid, I'll buy you a drink!**" **I felt so grown up.** **We walked into this tiny cafe** that **smelled amazing**, and **I had no idea what to order.** **My friend ordered me a mocha**, **which had whipped cream and chocolate syrup on top.** **I thought it was a dessert!** **It was sweet, and I loved it.** **But then she ordered an americano for herself**, and **I took a sip**. **It was so bitter that I made a terrible face**. **She laughed so hard.** **What I remember the most is how my friend treated me like an adult.** **Funny enough, now I drink black coffee every day.** **That day was where it all began.**
 
 - 핵심: `I had no idea what to ~`, `whipped cream`, `made a terrible face`, `where it all began`
-- Q4(어린 시절)의 누나 이야기와 이어집니다.
 
 ---
 
@@ -126,11 +123,11 @@
 
 ---
 
-## Q11. 롤플레이: 이모 집 봐주기 질문
+## Q11. 롤플레이: 친척 집 봐주기 질문
 
 **Q:** Your relatives are going to travel, and their house is going to be empty. You are asked to watch the house while they are gone on the trip. Call your relatives and ask three or four questions about what you need to do.
 
-> Hi, Aunt, **it's me.** **Thanks for asking me to watch your house.** **I'm happy to help.** **I just have a few questions.** **First, how long will you be away?** ... **Okay. And what should I do every day?** **Do I need to water the plants** or **take in the mail**? ... **Got it. Also, do you have a pet** that **needs to be fed?** ... **One more thing: is there anything I should know about the house?** **For example, how do I turn on the heater**, and **where is the fuse box**, **just in case?** ... **Perfect. Please don't worry about anything.** **Have a wonderful trip!**
+> Hi, **it's me.** **Thanks for asking me to watch your house.** **I'm happy to help.** **I just have a few questions.** **First, how long will you be away?** ... **Okay. And what should I do every day?** **Do I need to water the plants** or **take in the mail**? ... **Got it. Also, do you have a pet** that **needs to be fed?** ... **One more thing: is there anything I should know about the house?** **For example, how do I turn on the heater**, and **where is the fuse box**, **just in case?** ... **Perfect. Please don't worry about anything.** **Have a wonderful trip!**
 
 - 핵심: `watch the house`, `water the plants`, `take in the mail`, `just in case`
 - 질문은 4개입니다. (기간 / 할 일 / 반려동물 / 집 사용법)
@@ -141,20 +138,20 @@
 
 **Q:** You just arrived at your relatives' house, but you cannot get into the house because you cannot find the keys to the house. Call your relatives and ask them two or three questions to solve the problem.
 
-> Hi, Aunt, **I have a bit of a problem.** **I'm standing in front of your house**, **but I can't find the key.** **I think I left it at home**, **or maybe I dropped it somewhere.** **I'm so sorry.** **First, do you have a spare key** hidden **somewhere**, like **under a flowerpot** or **in the mailbox**? ... **No? Okay. Then, is there a neighbor who has a copy?** ... **Or maybe, does the door have a digital lock** with **a password?** **If so, could you tell me the code?** ... **Great, I'll try that.** **If none of that works, I could call a locksmith.** **Do you mind if I do that?** **Again, I'm really sorry for the trouble.** **Thank you so much for your help!**
+> Hi, **I have a bit of a problem.** **I'm standing in front of your house**, **but I can't find the key.** **I think I left it at home**, **or maybe I dropped it somewhere.** **I'm so sorry.** **First, do you have a spare key** hidden **somewhere**, like **under a flowerpot** or **in the mailbox**? ... **No? Okay. Then, is there a neighbor who has a copy?** ... **Or maybe, does the door have a digital lock** with **a password?** **If so, could you tell me the code?** ... **Great, I'll try that.** **If none of that works, I could call a locksmith.** **Do you mind if I do that?** **Again, I'm really sorry for the trouble.** **Thank you so much for your help!**
 
 - 핵심: `spare key`, `under a flowerpot`, `a locksmith`, `Do you mind if I ~?`
 - 질문 구조: 숨겨둔 열쇠 → 이웃 → 도어락 비밀번호 (3개) + 열쇠 수리공 제안
 
 ---
 
-## Q13. 지키지 못한 약속 (아들 수현과 야구장)
+## Q13. 지키지 못한 약속 (친구 아이와 야구장)
 
 **Q:** Have you ever been in a situation where you couldn't keep a promise to a friend or a family member? What was the reason you couldn't keep the promise, and how did you deal with the situation?
 
-> **Yes, and I still feel bad about it.** **A few years ago, I promised my son, Suhyun, that I'd take him to a baseball game.** **He was so excited.** **He talked about it for weeks**, and **he even put on his jersey** that morning. **But on the day of the game, I woke up with a terrible fever.** **It turned out to be the flu.** **I could barely get out of bed.** **When I told Suhyun, he didn't say anything.** **He just went to his room.** **I felt awful.**
+> **Yes, and I still feel bad about it.** **A few years ago, I promised my friend's kid that I'd take him to a baseball game.** **He was so excited.** **He talked about it for weeks**, and **he even put on his jersey** that morning. **But on the day of the game, I woke up with a terrible fever.** **It turned out to be the flu.** **I could barely get out of bed.** **When I told him, he didn't say anything.** **He just stared at the floor.** **I felt awful.**
 >
-> **As soon as I felt better, I made it up to him.** **I bought tickets for the next home game**, **and I also bought him a new cap.** **We ate hot dogs** and **cheered like crazy**. **He forgave me**, and **we had an even better time** than we would have. **Since then, I've tried never to break a promise** to **my kids**. **If I have to, I always make it up** right away.
+> **As soon as I felt better, I made it up to him.** **I bought tickets for the next home game**, **and I also bought him a new cap.** **We ate hot dogs** and **cheered like crazy**. **He forgave me**, and **we had an even better time** than we would have. **Since then, I've tried never to break a promise** to **kids**. **If I have to, I always make it up** right away.
 
 - 핵심: `still feel bad about it`, `It turned out to be ~`, `make it up to ~`, `cheer like crazy`
 

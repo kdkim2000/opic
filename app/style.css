@@ -77,3 +77,10 @@ input[type=range] { width: 100%; }
   background: #000c; color: #fff; padding: 10px 16px; border-radius: 12px; opacity: 0; pointer-events: none;
   transition: opacity .2s; max-width: 90vw; z-index: 20; }
 #toast.show { opacity: 1; }
+
+/* 홈: 시리즈 섹션 */
+.series { margin: 16px 0 8px; }
+.sec-head, .series > summary { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 8px; min-width: 0; }
+.series > summary { cursor: pointer; list-style: revert; }
+.sec-title { font-size: 1.05rem; font-weight: 700; overflow-wrap: anywhere; }
+.sec-sum { overflow-wrap: anywhere; }

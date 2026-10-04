@@ -1,0 +1,52 @@
+Opic28 — 문제 스크립트 (여우 MOCK TEST 28, 난이도 5~6)
+
+[Background Survey]
+1. 일 경험 없음
+2. 학생 - 아니오, 수업 등록 후 5년
+3. 독신자로서 개인 주택이나 아파트에 거주
+4. (총 8개) 영화보기, 콘서트 가기, 공연/연극 관람하기, 공원 가기, 해변가기, 카페/커피전문점 가기
+5. (총 1개) 음악감상
+6. (총 3개) 조깅, 걷기, 신체 운동을 즐기지 않음
+7. (총 2개) 국내여행, 해외여행
+
+------------------------------------------------------------
+[자기소개]
+Q1. Let's start the interview now. Tell me something about yourself.
+
+------------------------------------------------------------
+[날씨 (돌발)]
+Q2. Tell me about the seasons in your country. What is the weather like in each season?
+
+Q3. What is the weather like where you are today? What is happening with the weather right now?
+
+Q4. How has the weather changed over the years? What was the weather like when you were a child, and how is it different from the weather now?
+
+------------------------------------------------------------
+[집 / 거주]
+Q5. I'd like to talk about where you live. Can you describe your home? What does it look like, and how many rooms does it have?
+
+Q6. What do you do when you are at home? What do you usually do on weekdays, and what do you usually do on weekends?
+
+Q7. Tell me about some problems or issues you've had in your home. Maybe something broke, or someone you lived with didn't cooperate with you. Explain those problems in detail.
+
+------------------------------------------------------------
+[해외여행]
+Q8. You indicated in the survey that you take vacations internationally. Tell me about a place that people in your country like to visit when traveling abroad. Where is it, and why is it popular?
+
+Q9. Tell me about a trip you took when you were a child. What country did you visit, and what was your impression of that place?
+
+Q10. Unexpected or unusual things can happen when we travel overseas. Have you ever had an unforgettable experience while traveling? What happened, and what made it so memorable?
+
+------------------------------------------------------------
+[롤플레이 — 면접]
+Q11. I'd like to give you a situation and ask you to act it out. You have a job interview at a major company, and you want to learn more about the company before the interview. Call the company and ask three or four questions about it.
+
+Q12. I'm sorry, but there is a problem I need you to resolve. Something has come up, and you cannot go to the interview. Call the company, explain the situation, and offer two or three suggestions, so you won't lose the opportunity.
+
+Q13. That's the end of the situation. Have you ever been in a situation where you had to cancel an important appointment or plan? What happened? When was it, and how did you resolve it?
+
+------------------------------------------------------------
+[모임·축하 (돌발)]
+Q14. How are gatherings and celebrations in small towns different from those in big cities? Compare celebrations in small towns with those in big cities in your country. How are they different?
+
+Q15. It's sometimes difficult to plan gatherings. Tell me about some challenges related to making plans for gatherings. How do people deal with these problems?

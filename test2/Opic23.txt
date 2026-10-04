@@ -1,0 +1,52 @@
+Opic23 — 문제 스크립트 (여우 MOCK TEST 23, 난이도 5~6)
+
+[Background Survey]
+1. 일 경험 없음
+2. 학생 - 아니오, 수업 등록 후 5년
+3. 독신자로서 개인 주택이나 아파트에 거주
+4. (총 8개) 영화보기, 콘서트 가기, 공연/연극 관람하기, 공원 가기, 해변가기, 카페/커피전문점 가기
+5. (총 1개) 음악감상
+6. (총 3개) 조깅, 걷기, 신체 운동을 즐기지 않음
+7. (총 2개) 국내여행, 해외여행
+
+------------------------------------------------------------
+[자기소개]
+Q1. Let's start the interview now. Tell me something about yourself.
+
+------------------------------------------------------------
+[영화 보기]
+Q2. You mentioned in the survey that you go to the movies. What kinds of movies do you like to watch? Why do you enjoy those kinds of movies?
+
+Q3. Tell me about a memorable movie you have watched. What was it about? What made it special?
+
+Q4. Can you tell me about an actor or actress you recently saw in the news? What was the news about? Did you find it interesting?
+
+------------------------------------------------------------
+[식당 / 외식 (돌발)]
+Q5. Tell me about the restaurants in your country. What are they like?
+
+Q6. What do you usually do when you go to a restaurant? What steps do you take when you eat out?
+
+Q7. Can you tell me about a time you ate at a restaurant when you were a child? Where did you go? What was the restaurant like? Who did you go with? Was the experience special to you?
+
+------------------------------------------------------------
+[기술 (돌발)]
+Q8. What kinds of technology are commonly used in your country? Tell me about some of the technology people use, such as phones and computers.
+
+Q9. You may have noticed that technology has changed over the years. What was technology like when you were a child? How has it changed since then?
+
+Q10. Have you ever had problems dealing with technology? Maybe one of your devices stopped working or broke. Tell me about one of your experiences. How did you solve the problem?
+
+------------------------------------------------------------
+[롤플레이 — 렌터카]
+Q11. I'd like to give you a situation and ask you to act it out. You are visiting New York on vacation, and you want to rent a car from an agency. Ask the agent three or four questions about renting a car for a week.
+
+Q12. I'm sorry, but there's a problem that I need you to resolve. The agency isn't sure they can rent you a car because you have a non-US driver's license. Explain what kind of license you have and why it is valid for renting a car.
+
+Q13. That's the end of the situation. Tell me about an interesting experience that you had while you were on vacation. Why was it memorable? Was it a positive or negative experience? Tell me when and where it happened, and who you were with.
+
+------------------------------------------------------------
+[휴일 / 명절 (돌발)]
+Q14. Tell me about some holidays in your country. What do people do on those holidays? How do they celebrate them?
+
+Q15. Talk about some issues or concerns people have about holidays. Why do people have concerns about them, and how do they deal with them?
