@@ -1,24 +1,27 @@
 # PRD — OPIc 연습 앱 (Eva Practice)
 
-- 버전: v0.2 (구현 현황 반영)
-- 작성일: 2026-10-04 (v0.1 초안 → v0.2: 실제 코드 구조 분석 후 갱신)
+- 버전: v0.4 (Survey 모드 반영)
+- 작성일: 2026-10-04 (v0.1 초안 → v0.2: 코드 구조 분석 → v0.3: 연습 모드·기초 모드·콘텐츠 확장 반영, 2026-10-06 갱신)
 - 대상: 본인 1인 사용 (개인 학습용)
-- 상태: MVP 구현 완료, 폰 실기기 검증·2차 기능·콘텐츠 확장(opic16~30) 남음
+- 상태: 5개 모드(학습·실전·연습·기초·Survey)와 23세트 344문항 구현 완료. 폰 실기기 검증, 2차 기능(오프라인·백업), git 히스토리 개인정보 정리가 남음
 
 ## 1. 배경과 목표
 
 ### 1.1 배경
-- OPIc IH(레벨 5-5) 재취득을 위해 모의고사 8세트(총 119문항)의 질문 음원과 내 답변 스크립트, 모델 답변 음원을 만들어 두었다.
+- OPIc IH(레벨 5-5) 재취득을 위해 모의고사 23세트(이전 문제 opic1~8, 최신 문제 opic16~30, 총 344문항)의 질문 음원과 내 답변 스크립트, 모델 답변 음원을 만들어 두었다.
 - 파일이 폴더에 흩어져 있어 "질문 듣기 → 말하기 → 스크립트 확인 → 모델 답변 듣기"를 반복하기 불편했고, 이동 중에도 폰으로 연습하고 싶다.
 - 이를 해결하는 정적 PWA를 만들어 GitHub Pages로 배포하는 구조까지 구현했다.
 
 ### 1.2 목표
 1. 실전과 비슷한 흐름(Eva의 질문 → 내 답변 녹음)을 폰에서 바로 연습한다.
 2. 스크립트와 모델 답변 MP3로 쉐도잉·반복 학습을 한다.
-3. 가장 단순한 구조(프레임워크·번들러 없음)로 만들고, 콘텐츠가 바뀌어도 쉽게 갱신한다.
+3. 주제별로 묶어 **키워드(동사·명사)만 보고 영어식으로 이야기를 이어 말하는** 훈련을 한다. (연습 모드)
+4. 답변에 반복되는 **기본 표현과 필러**를 유사한 것끼리 묶어 입에 붙이고, 말이 끊기지 않게 이어 가는 훈련을 한다. (기초 모드)
+5. 시험 첫 화면인 Background Survey를 당황하지 않고 선택하도록 반복 연습한다. (Survey 모드, 다른 콘텐츠에는 영향 없음)
+6. 가장 단순한 구조(프레임워크·번들러 없음)로 만들고, 콘텐츠가 바뀌어도 쉽게 갱신한다.
 
 ### 1.3 비목표
-- 발음·유창성 자동 평가, AI 채점
+- 발음·유창성 자동 평가, AI 채점, 음성 인식(STT)으로 필러 사용 자동 판정 (기초 모드는 침묵 길이만 측정)
 - 계정, 로그인, 서버 저장, 기기 간 동기화
 - 앱 안에서 질문/스크립트 편집 (편집은 마크다운 파일에서 하고 재빌드)
 - 다국어 UI (한국어 UI + 영어 콘텐츠)
@@ -29,18 +32,27 @@
 ```
 E:\apps\opic\
   app\                        정적 PWA (배포 대상)
-    index.html  app.js(407줄)  style.css  sw.js  manifest.webmanifest  .nojekyll
+    index.html  app.js(약 1,000줄)  style.css  sw.js(opic-shell-v5)  manifest.webmanifest  .nojekyll
     icons\icon-192.png icon-512.png
-    data\questions.json       ← 빌드 산출물 (git 제외)
+    data\questions.json       ← 빌드 산출물 (git 제외): 문항·주제·키워드
+    data\basics.json          ← 빌드 산출물 (git 제외): 기초 모드 표현·필러, 기초 모드 진입 시에만 로드
     audio\q\opicN\*.mp3       ← 빌드 산출물 (git 제외, 질문 음원 복사본)
     audio\a\opicN\*.mp3       ← 빌드 산출물 (git 제외, 모델 답변 복사본)
-  tools\build_data.py         questions.json 생성 + 음원 복사 (표준 라이브러리만 사용)
+    audio\b\*.mp3            ← 빌드 산출물 (git 제외, 기초 모드 표현·필러 음원)
+  tools\build_data.py         questions.json·basics.json 생성 + 음원 복사 (표준 라이브러리만 사용)
+  tools\themes.py             그룹 슬러그 → 연습 모드 주제 매핑 (누락 시 빌드 실패)
+  tools\basics_lib.py         기초 모드 콘텐츠(basics\*.md) 파서·검증
   gen_mp3.py                  질문 MP3 생성 (edge-tts, en-US-AvaNeural, rate -5%)
   gen_answer_mp3.py           답변 MP3 생성 (edge-tts, en-US-AndrewNeural, rate -10%)
+  gen_mp3_test2.py            최신 질문(16~30) MP3 생성, test2\mp3\manifest.csv 작성
+  gen_answer_mp3_test2.py     최신 답변(16~30) MP3 생성, answer2\mp3\manifest_opicN.csv 작성
+  gen_basic_mp3.py            기초 모드 표현·필러 음원 생성 (basics\mp3\, --dry-run/--force/--only)
   test\                       질문 원문 opic1~8.txt + mp3\(질문 MP3, manifest.csv)   ← 원본(커밋)
   ansewer\                    답변 스크립트 opicN_answers.md + mp3\(답변 MP3, manifest_opicN.csv) ← 원본(커밋)
   test2\                      최신 질문 원문 Opic16~30.txt + mp3\(질문 MP3, manifest.csv)
   answer2\                    최신 답변 스크립트 opic16~30_answers.md + mp3\(답변 MP3, manifest_opicN.csv)  (개인정보 제거본)
+  keywords\                   연습 모드 키워드 opic{1-8,16-30}_keywords.md (beats / verbs / nouns)  ← 원본(커밋)
+  basics\                     기초 모드 콘텐츠: expr_1~5.md(표현 14카테고리), fillers.md(필러 6그룹+챌린지 설정), mp3\ ← 원본(커밋)
   docs\                       AI-DLC 설계 산출물 11종 (요구사항·유즈케이스·API·데이터·클래스·화면 등, 2026-09-30)
   .github\workflows\deploy.yml  GitHub Pages 자동 배포
 ```
@@ -53,7 +65,9 @@ E:\apps\opic\
 | 세트 | 이전 문제 opic1~8, 최신 문제 opic16~30 (23개). 홈에서 최신 → 이전 순으로 구분 표시 |
 | 문항 | 344개 (이전 119 + 최신 225). opic5만 14개(Q15 질문 음원 없음), 나머지 15개 |
 | 문항 구성 | 세트당 6~7개 그룹: 자기소개 + 선택 주제 + 돌발(sudden) + 롤플레이(rp) |
-| 음원 용량 | 약 36MB (질문 약 5.7MB + 답변 약 31MB) |
+| 음원 용량 | 약 111MB (`app/audio`: 질문·답변 약 102MB + 기초 모드 약 9MB). 세트 단위 로드 |
+| 연습 모드 | 주제 23개, 문항별 키워드 344세트 |
+| 기초 모드 | 표현 158개(14카테고리) + 필러 36개(6그룹), 음원 633클립 |
 | 누락 | 현재 빌드 기준 답변 스크립트/음원 누락 문항 0개 |
 
 ### 2.3 콘텐츠 → 앱 데이터 파이프라인
@@ -62,24 +76,30 @@ test\opicN.txt        그룹 헤더 "[...]" 순서  (g번호 = 순서)
 test\mp3\manifest.csv 질문 텍스트·그룹·질문 MP3 경로
 ansewer\opicN_answers.md   "## Q번호. 제목" / ">" 스크립트 / "- 핵심: `표현`" 파싱
 ansewer\mp3\manifest_opicN.csv  답변 MP3 경로
+keywords\opicN_keywords.md      beats / verbs / nouns (연습 모드)
+tools\themes.py                 그룹 슬러그 → 주제
+basics\expr_*.md, fillers.md    기초 모드 표현·필러 (+ gen_basic_mp3.py 로 basics\mp3\ 생성)
         │ python tools\build_data.py
         ▼
-app\data\questions.json  +  app\audio\{q,a}\...   (git 제외)
+app\data\questions.json, basics.json  +  app\audio\{q,a,b}\...   (git 제외)
         │ git push (main/master)
         ▼
 GitHub Actions: build_data.py → 문항 수·음원 누락 검사(누락 시 배포 중단) → app\ 업로드 → GitHub Pages
 ```
+- 세트 1~8은 `test/`·`ansewer/`, 16~30은 `test2/`·`answer2/`에서 읽는다 (`build_data.py`의 `SET_CONFIG`). test2 원문의 `[Background Survey]` 블록은 그룹 번호 계산에서 제외한다.
 - 파일명 규칙 `opic{N}_g##_{slug}_q##` 로 질문과 답변 음원을 짝짓는다.
+- 모든 답변 스크립트는 공개 저장소를 전제로 이름·회사·거주지·가족 정보를 제거한 일반 표현으로 작성한다. (자기소개 Q1은 전 세트 동일)
 - 그룹 플래그: 헤더에 "돌발" 포함 → `sudden`, "롤플레이"로 시작 → `roleplay`.
 - 제목 정리: 스크립트 제목에서 `(지어낸|임의|동일|확정)` 괄호 메모를 제거하고, 스크립트의 `⚠️`를 삭제한다.
 - 답변 또는 음원이 없는 문항은 경고만 출력하고 질문만 포함한다.
 
 ### 2.4 앱 구조 (app.js)
-- 해시 라우터: `#/`(홈), `#/set/N`, `#/practice/N/Q[?g=그룹|list=hard]`, `#/exam/N`, `#/hard`
-- 화면 함수: `viewHome`, `viewSet`, `viewHard`, `viewPractice`, `viewExam`. 화면 전환 시 `cleanup()`으로 오디오·마이크·타이머를 정리한다.
+- 해시 라우터: `#/`(홈), `#/set/N`, `#/practice/N/Q[?g=그룹|list=hard]`, `#/exam/N`, `#/hard`, `#/drill[/<주제>[/<세트>/<문항>]]`, `#/basic`, `#/basic/x/<카테고리>[/<n>][?tab=listen|repeat|swap|mix]`, `#/basic/f/<필러그룹>[/<n>]`, `#/basic/chain`
+- 화면 함수: `viewHome`, `viewSet`, `viewHard`, `viewPractice`, `viewExam`, `viewDrillHome/Theme/Card`, `viewBasicHome/Cat/Card/Chain`. 화면 전환 시 `cleanup()`으로 오디오·마이크·타이머·AudioContext를 정리한다.
+- 기초 모드는 `basics.json`을 진입 시 한 번만 fetch해 캐시하고, 필러 챌린지는 WebAudio `AnalyserNode`(RMS 25ms, 적응형 임계값, 0.35초 이상 침묵만 집계)로 침묵을 측정한다.
 - 저장: IndexedDB `opic-practice` v1 (아래 §5.2). 오디오는 `HTMLAudioElement`, 녹음은 `MediaRecorder`.
 - 녹음 형식은 `webm(opus) → webm → mp4 → aac` 순으로 `isTypeSupported` 확인 후 선택. 다운로드 확장자는 mp4→`m4a`, webm→`webm`.
-- 서비스 워커(`opic-shell-v1`): 앱 셸만 네트워크 우선·실패 시 캐시. `/audio/` 경로는 가로채지 않는다(Safari Range 요청 문제 회피) → **음원은 오프라인에서 재생되지 않는다.**
+- 서비스 워커(`opic-shell-v5`): 앱 셸만 네트워크 우선·실패 시 캐시. `/audio/` 경로는 가로채지 않는다(Safari Range 요청 문제 회피) → **음원은 오프라인에서 재생되지 않는다.**
 - 스타일: 단일 CSS, 다크 모드 자동(`prefers-color-scheme`), 최대 폭 640px, 안전 영역 대응.
 
 ## 3. 사용자와 시나리오
@@ -89,6 +109,9 @@ GitHub Actions: build_data.py → 문항 수·음원 누락 검사(누락 시 �
 | A. 이동 중 쉐도잉 | 폰으로 한 문항을 골라 모델 답변을 0.9배속으로 반복 듣고 따라 말한다. |
 | B. 실전 모드 | 세트 하나를 골라 Q1~Q15를 순서대로 푼다. 스크립트는 보이지 않고, 질문이 끝나면 바로 녹음한다. |
 | C. 복습 | 내 녹음을 듣고 모델 답변과 비교한다. 어려운 문항은 "어려움"으로 표시해 모아서 다시 연습한다. |
+| E. 주제별 키워드 말하기 | 연습 모드에서 주제(예: 음악 감상, 해외여행)를 골라 장면 단서와 동사·명사 키워드만 보고 이야기를 만들어 말한다. 난이도를 올려 키워드를 줄여 간다. |
+| F. 기본 표현·필러 반복 | 기초 모드에서 기능별 표현(의견, 이유, 반전 등)을 듣고 따라 말하고 섞어 말한다. 필러 챌린지로 45초 동안 막히지 않고 말하는 연습을 한다. |
+| G. Survey 선택 연습 | Survey 모드에서 내 시나리오(직업·학생·거주·여가·취미·운동·여행)를 실제 설문 화면처럼 선택한다. 4~7번 합계 12개 규칙까지 연습하고 오답을 확인한다. |
 | D. 콘텐츠 갱신 | PC에서 스크립트 수정 → MP3 재생성 → push 하면 CI가 데이터를 재생성해 배포한다. |
 
 ## 4. 기능 요구사항과 구현 현황
@@ -160,6 +183,7 @@ GitHub Actions: build_data.py → 문항 수·음원 누락 검사(누락 시 �
 | FR-71 | 문항마다 장면 단서(beats)·동사·명사 키워드를 제공하고 키워드만 보고 영어식으로 이야기를 이어 말한다 | M | ✅ | `keywords/opicN_keywords.md` → `keywords{beats,verbs,nouns}`; 344문항 |
 | FR-72 | 난이도 3단계(Lv1 장면+동사+명사 / Lv2 동사+명사 / Lv3 명사만), 칩 탭으로 사용 표시 | M | ✅ | 설정 `drillLevel` 저장 |
 | FR-73 | 녹음·자기 평가·시도 횟수는 학습/실전 모드와 공유 | M | ✅ | `progress`/`recordings` 키 `세트:문항` 공유 |
+| FR-74 | 키워드를 단계적으로 줄이는 반복(오늘의 연습 큐 연계), 키워드 사용률 기록 | S | ⬜ | 현재 칩 사용 표시는 화면 안에서만 유지되고 저장하지 않음 |
 
 ### 4.9 기초 모드 (기본 표현·필러)
 | ID | 요구사항 | 우선 | 상태 | 구현 메모 |
@@ -169,6 +193,18 @@ GitHub Actions: build_data.py → 문항 수·음원 누락 검사(누락 시 �
 | FR-82 | 필러 6그룹(36개) 듣기·따라 말하기 | M | ✅ | `basics/fillers.md`, `#/basic/f/<group>` |
 | FR-83 | 필러 챌린지: 질문 1개를 45초 말하며 침묵 측정(최장 침묵, 2초 이상 횟수, 말한 비율) | M | ✅ | WebAudio RMS 기반. 실제 목소리 환경에서 임계값 튜닝 필요, 녹음은 저장하지 않음 |
 | FR-84 | 표현·필러 음원(633클립) 생성·배포 | M | ✅ | `gen_basic_mp3.py`, `app/audio/b/` (약 9MB) |
+| FR-85 | 약한 표현을 모아 복습("다시" 표시 표현 큐), 필러 사용 자동 판정 | S | ⬜ | 섞어 말하기 요약에서 "다시 볼 표현"만 표시. STT 기반 판정은 비목표 |
+
+### 4.10 Survey 모드 (Background Survey 선택 연습)
+| ID | 요구사항 | 우선 | 상태 | 구현 메모 |
+| --- | --- | --- | --- | --- |
+| FR-90 | 실제 Background Survey 양식(7문항, 한글+영어 병기)을 2쪽(1~3번 단일 / 4~7번 복수)으로 재현 | M | ✅ | `app/data/survey.json`(옵션 66개), `#/survey/run` |
+| FR-91 | 4~7번 합계 12개 이상이어야 다음으로 진행, 실시간 카운터와 사유 문구 | M | ✅ | `minTotal` 규칙. 11개에서 비활성, 12개에서 활성 확인 |
+| FR-92 | 내 시나리오(기본: 일경험 없음/학생 아니오/홀로 거주/여가 8/취미 1/운동 3/여행 2) 기준 가이드·시험 모드, 질문별 채점(빠뜨림·잘못 선택·개수 차이) | M | ✅ | 가이드는 ★ 힌트·즉시 정오, 시험은 힌트 없음·타이머 |
+| FR-93 | 시나리오 편집(필수 항목 + 총 개수, 기본값 복원), 기록(최근 20회) 저장 | M | ✅ | `settings`의 `survey:scenario`, `survey:history` |
+| FR-94 | 틀린 질문만 다시 풀기 | S | ✅ | `only` 파라미터. 이 경우 12개 합계 규칙은 생략 |
+| FR-95 | 선택이 다른 콘텐츠를 바꾸지 않음 (독립 기능) | M | ✅ | 문항·주제·키워드와 연동 없음. 화면에 안내 문구 |
+| FR-96 | Self-Assessment(난이도 선택) 연습, 진행 중 상태 새로고침 복원 | S | ⬜ | 범위 밖 |
 
 ## 5. 화면 구성
 
@@ -176,10 +212,16 @@ GitHub Actions: build_data.py → 문항 수·음원 누락 검사(누락 시 �
 
 | 화면 | 라우트 | 구성 |
 | --- | --- | --- |
-| 홈 | `#/` | 세트 카드(진행 막대, 완료 n/N, [실전 모드] [학습 모드]) + "어려움 문항 모아 연습 (n)" + 데이터 저장 안내 |
+| 홈 | `#/` | 상단 [연습 모드] [기초 모드] [Survey 모드] 카드 → "최신 문제 (opic16~30)" 세트 카드(진행 막대, 완료 n/N, [실전 모드] [학습 모드]) → "이전 문제 (opic1~8)" (접힘) → "어려움 문항 모아 연습 (n)" + 데이터 저장 안내 |
 | 세트 | `#/set/N` | [실전 모드 시작], 그룹 헤더(+그룹 연속 연습), 문항 행(Q번호·제목·상태 배지·시도 횟수) |
 | 어려움 모음 | `#/hard` | 전체 세트의 어려움 문항 목록, "처음부터 연습" |
 | 연습 | `#/practice/N/Q` | 질문(텍스트+듣기) → 스크립트(+가리기, 핵심 표현 칩) → 모델 답변(재생/±10초/속도/반복/시크바) → 내 녹음(녹음, 번갈아 듣기, 녹음 목록) → 자기 평가 → 이전/다음 |
+| Survey 모드 | `#/survey`, `#/survey/run?mode=guide|exam[&page][&only]`, `#/survey/result`, `#/survey/edit` | 모드 홈(시나리오 요약, [가이드] [시험처럼] [수정], 최근 기록) → 실행 1쪽(Q1~3 라디오 카드)·2쪽(Q4~7 체크 카드 + 고정 카운터) → 결과(정확도, 질문별 ✅/⚠) → 시나리오 편집 |
+| 연습 모드 | `#/drill` → `#/drill/<주제>` → `#/drill/<주제>/<세트>/<문항>` | 주제 목록(① 자기소개 ② Survey 주제 ③ 돌발 주제 ④ 롤플레이, 진행률) → 주제 내 문항 목록(최신 세트 먼저, [처음부터 연속 연습]) → 카드: 질문 듣기, 스토리 키워드(장면 단계·동사 칩·명사 칩, Lv1~3 토글), 내 녹음, 스크립트·모델 답변 확인, 자기 평가, 이전/다음 |
+| 기초 모드 | `#/basic` | ① 기본 표현 14카테고리 카드(마스터 n/N) ② 필러 6그룹 카드 + [필러 챌린지] |
+| 표현 카테고리 | `#/basic/x/<cat>` | 패턴 목록(한글 뜻, ✔ 마스터), [처음부터 묶어서 연습] [섞어 말하기] |
+| 표현·필러 카드 | `#/basic/x/<cat>/<n>`, `#/basic/f/<group>/<n>` | 표현 4탭(듣기 / 따라 말하기 3·5회 / 바꿔 말하기 / 섞어 말하기), 필러 2탭(듣기 / 따라 말하기), 배속 0.75·0.9·1.0 |
+| 필러 챌린지 | `#/basic/chain` | 무작위 Survey 질문 + 필러 칩(시작·이음·마무리·막힐 때) → 3-2-1 → 45초 녹음 → 결과(총 시간, 말한 비율, 최장 침묵, 2초 이상 침묵 횟수). 녹음은 저장하지 않음 |
 | 실전 | `#/exam/N` | 안내+시작 → "Qn / 마지막번호" → 질문 재생 → 카운트다운(다시 듣기) → 녹음 중(타이머·[답변 끝]) → 종료 요약 |
 
 - 실전 화면의 문항 번호 표기는 `Q{번호} / {마지막 문항 번호}`이고, 별도로 `i / 총 문항 수`를 녹음 중에 표시한다.
@@ -201,22 +243,49 @@ GitHub Actions: build_data.py → 문항 수·음원 누락 검사(누락 시 �
         "qAudio": "audio/q/opic3/opic3_g03_home_q05.mp3",
         "aAudio": "audio/a/opic3/opic3_g03_home_q05_answer.mp3",
         "script": "문단은 빈 줄로 구분, **굵은 표현** 마크다운 포함 원문",
-        "keyPoints": ["just the right size for ~"]
+        "keyPoints": ["just the right size for ~"],
+        "keywords": {"beats": ["I'm at a cafe", "..."], "verbs": ["grab", "..."], "nouns": ["latte", "..."]}
       }]
     }]
-  }]
+  }],
+  "themes": [{"id": "cafe", "label": "카페", "kind": "survey", "order": 3}]
 }
 ```
-- `aAudio`는 답변 음원이 없으면 `null`.
+- 최상위에 `themes`, 세트에 `series`(`legacy` 1~8 / `latest` 16~30), 그룹에 `theme`(주제 id)를 둔다. 주제 `kind`는 `intro|survey|sudden|roleplay`.
+- `aAudio`는 답변 음원이 없으면 `null`. `keywords`의 세 배열이 모두 채워져야 빌드 경고가 없다.
+
+### 6.1a `data/survey.json` (손으로 작성하는 정적 소스, git 포함)
+```json
+{ "version": 1, "note": "...", "minTotal": {"questions": ["q4","q5","q6","q7"], "min": 12},
+  "pages": [{"questions": ["q1","q2","q3"]}, {"questions": ["q4","q5","q6","q7"]}],
+  "questions": [{"id": "q4", "no": 4, "type": "multi", "ko": "...", "en": "...",
+                 "options": [{"id": "q4-movie", "ko": "영화 보기", "en": "Going to the movies"}]}],
+  "defaultScenario": {"q4": {"must": ["q4-movie"], "count": 8}} }
+```
+- `count`는 총 선택 개수(`must` 외 자유 선택 포함). 채점: 단일은 `must` 포함, 복수는 `must ⊆ 선택` 이고 `|선택| == count`.
+
+### 6.1b `data/basics.json` (빌드 산출물, 기초 모드 진입 시 로드)
+```json
+{
+  "categories": [{"id": "opinion", "label": "의견·생각 말하기", "items": [{
+    "id": "opinion-01", "pattern": "I think (that) ~", "meaning": "...", "when": "...", "from": ["16:8"],
+    "audio": "audio/b/opinion-01_p.mp3",
+    "examples": [{"en": "...", "ko": "...", "audio": "audio/b/opinion-01_e1.mp3"}]}]}],
+  "fillerGroups": [{"id": "stall", "label": "시간 벌기", "items": [{"id": "stall-01", "filler": "Well,", "...": "..."}]}],
+  "chain": {"starters": [], "connectors": [], "closers": [], "rescue": []}
+}
+```
+- 표현 카테고리 14개(opinion, reason, start, twist, feeling, compare, describe, habit, prefer, ask, problem, guess, wrapup, thanks), 필러 그룹 6개(stall, link, honest, fix, explain, close). 항목 id는 오디오 파일명에 쓰이므로 한번 정하면 바꾸지 않는다.
 
 ### 6.2 IndexedDB `opic-practice` (v1)
 | 저장소 | 키 | 값 |
 | --- | --- | --- |
 | `progress` | `key` = `"세트:문항"` (예 `"3:5"`) | `{ key, status(new/hard/ok/done), attempts, lastPracticed(YYYY-MM-DD), note? }` |
 | `recordings` | 자동 증가 `id`, 인덱스 `byKey`(= `"세트:문항"`) | `{ id, key, set, no, createdAt, mime, durationSec, blob }` |
-| `settings` | `name` | `{ name, value }` — 현재 `speed`만 사용 (반복 횟수 등은 미저장) |
+| `settings` | `name` | `{ name, value }` — `survey:scenario`(내 시나리오), `survey:history`(최근 20회), `speed`(모델 답변 배속), `drillLevel`(연습 모드 난이도 1~3), `basicSpeed`(기초 모드 배속), `basic:<항목id>`(`{mastered, reps, last}`) |
 
 - v0.1 초안의 인덱스 `set,no` 는 `key` 단일 인덱스로 구현되었다.
+- 기초 모드 진행 기록은 DB 버전을 올리지 않고 기존 `settings` 저장소를 재사용한다. 필러 챌린지 녹음은 저장하지 않는다.
 
 ## 7. 기술 구조와 배포
 
@@ -226,17 +295,22 @@ GitHub Actions: build_data.py → 문항 수·음원 누락 검사(누락 시 �
 
 ### 7.2 콘텐츠 갱신 절차
 ```bash
-# ansewer/opicN_answers.md 수정 후
-python gen_answer_mp3.py --set N [문항번호...]   # 바뀐 문항 답변 MP3 재생성
-git add -A && git commit && git push             # CI가 빌드·검사·배포
-python tools/build_data.py                       # (로컬 확인 시) 데이터 생성
-cd app && python -m http.server 8765             # localhost는 HTTPS 없이도 마이크 허용
+# 답변 수정: ansewer/opicN_answers.md (1~8) 또는 answer2/opicN_answers.md (16~30)
+python gen_answer_mp3.py --set N [문항번호...]            # 이전 세트 답변 MP3 재생성
+python gen_answer_mp3_test2.py N --q 3 7                   # 최신 세트 답변 MP3 재생성 (--force 전체)
+# 연습 모드 키워드: keywords/opicN_keywords.md 수정 (beats 는 | 구분, verbs/nouns 는 쉼표 구분)
+# 기초 모드: basics/expr_*.md, basics/fillers.md 수정 후
+python gen_basic_mp3.py [--only <id접두어>]                # 새 문장 음원만 생성 (--dry-run 으로 미리 확인)
+python tools/build_data.py                                 # questions.json·basics.json 생성 + 음원 복사
+cd app && python -m http.server 8765                       # localhost는 HTTPS 없이도 마이크 허용
+git add -A && git commit && git push                       # CI가 빌드·검사·배포
 ```
-- 알려진 제약: `gen_answer_mp3.py`는 `--set` 미지정 시 opic1이 기본값이고, `build_data.py`는 `SET_CONFIG` 표(세트 1~8 = `test/`·`ansewer/`, 16~30 = `test2/`·`answer2/`)로 세트를 정의한다. 새 세트는 이 표에 추가한다.
+- `build_data.py`는 `SET_CONFIG` 표(세트 1~8 = `test/`·`ansewer/`, 16~30 = `test2/`·`answer2/`)로 세트를 정의한다. 새 세트는 이 표에 추가하고, 새 그룹 슬러그는 `tools/themes.py`에 매핑해야 한다(누락 시 빌드 실패).
+- 기초 모드 콘텐츠의 형식 오류는 `BasicsError`로 빌드를 중단시키고, 키워드 누락은 경고로 집계된다.
 
 ### 7.3 배포
 - GitHub Actions → GitHub Pages. `main`/`master` push 또는 수동 실행으로 동작한다. 상대 경로만 사용하므로 하위 경로(`/<repo>/`)에서도 동작한다.
-- 빌드 검증: 세트 수·문항 수 출력, `qAudio`/`aAudio` 경로의 파일 존재 여부 검사(누락 시 실패).
+- 빌드 검증: 세트 수·문항 수 출력, `qAudio`/`aAudio` 및 `basics.json`의 모든 `audio` 경로 파일 존재 여부 검사(누락 시 실패). 따라서 `basics/mp3/`와 질문·답변 음원 원본은 저장소에 커밋되어야 한다.
 - 최초 1회: 저장소 Settings → Pages → Source를 "GitHub Actions"로 변경.
 
 ## 8. 비기능 요구사항
@@ -246,56 +320,82 @@ cd app && python -m http.server 8765             # localhost는 HTTPS 없이도 
 | 모바일 | 360px 폭 가로 스크롤 없음, 버튼 최소 44px | 폭 640px 이하 단일 컬럼. 실기기 검증 필요 |
 | 호환 | iOS Safari 16+, Android Chrome 최신, 데스크톱 Chrome | 실기기 검증 필요 |
 | 녹음 형식 | `isTypeSupported`로 선택 (iOS `audio/mp4`, Chrome `audio/webm`) | 구현 |
-| 성능 | 첫 화면 2초 이내(JSON만 로드), 음원은 필요 시 로드 | 구현 (`questions.json`은 `no-cache`로 항상 최신 확인) |
-| 개인정보 | 녹음은 기기 밖으로 나가지 않음 | 구현. 단, 배포 사이트가 공개 접근 가능 (§9) |
+| 성능 | 첫 화면 2초 이내(JSON만 로드), 음원은 필요 시 로드 | 구현 (`questions.json`은 `no-cache`, `basics.json`은 기초 모드 진입 시에만 로드) |
+| 개인정보 | 녹음은 기기 밖으로 나가지 않음. 콘텐츠에 이름·회사·거주지·가족 정보를 두지 않음 | 구현(현재 파일 기준). 단, git 히스토리에 정리 전 내용이 남아 있고 배포 사이트가 공개 접근 가능 (§9) |
 | 접근성 | 충분한 대비, 상태를 색+텍스트로 표시, 토스트 `aria-live` | 구현 (다크 모드 지원) |
 
 ## 9. 리스크와 미해결 사항
 
 | 리스크 | 대응 / 현황 |
 | --- | --- |
-| **GitHub Pages 공개 노출**: 저장소가 비공개여도 Pages 주소를 알면 누구나 접근 가능. 스크립트·음원에 가족·직장 이야기 포함 | 미결정. 후보: 접근 제한 호스팅(Netlify/Cloudflare Pages), 저장소명 비공개 유지, 스크립트 일반화 |
+| **git 히스토리의 개인정보**: 첫 커밋(`58b75e9`)에 정리 전 스크립트·음원(이름·회사·거주지·가족)이 `origin/main`에 이미 올라가 있음. 현재 파일은 모두 일반화했지만 히스토리와 이전 Pages 배포본에는 남음 | **미결정**. 저장소 공개 전 (a) 새 저장소로 재시작 또는 (b) `main`을 새 첫 커밋으로 재작성 후 force push 필요. 현재 저장소 공개 여부 확인 필요 |
+| **GitHub Pages 공개 노출**: 저장소가 비공개여도 Pages 주소를 알면 누구나 접근 가능 | 콘텐츠는 일반화 완료. 그래도 비공개를 원하면 접근 제한 호스팅(Netlify/Cloudflare Pages) 검토 |
+| 필러 챌린지 침묵 측정이 가짜 마이크로만 검증됨 | 실제 목소리·소음 환경에서 임계값(하한 0.012, 소음 하위 20%×3) 튜닝 필요 |
 | iOS Safari 녹음 형식·권한·자동 재생 이슈 | 형식 자동 선택, 실전 모드는 시작 탭에서 권한 요청. **실기기 테스트 미완료** |
 | 음원 오프라인 미지원 (SW가 `/audio/` 제외) | FR-61에서 세트 단위 캐시 설계 필요 (Range 요청 처리 포함) |
 | 브라우저 데이터 삭제로 녹음·기록 손실 | FR-62 백업 전까지 홈 안내 문구와 개별 다운로드로 대응 |
 | 실전 모드 중 이탈 시 진행 중 문항 손실, 이어하기 없음 | FR-23 |
 | 스크립트·음원 불일치(opic5 Q15 등) | 빌드가 경고 출력 후 질문만 포함. CI 검사는 경로 존재만 확인 |
 | `docs/` 설계서와 구현 불일치 (서버·REST API·DB 전제) | 설계서를 정적 PWA 구조로 개정하거나 "참고용"으로 명시. 이 PRD가 우선 |
-| 음원 용량 36MB, 콘텐츠 확장 시 증가 | 세트 단위 로드 유지, 필요 시 비트레이트 하향 |
-| 자동화 테스트 없음 | 빌드 검증(CI)만 존재. 필요 시 Playwright e2e 도입 검토 |
+| 음원 용량 약 111MB, 콘텐츠 확장 시 증가 | 세트 단위 로드 유지, 오프라인 캐시(FR-61) 설계 시 세트·모드별 선택 다운로드, 필요 시 비트레이트 하향 |
+| 자동화 테스트 없음 | 빌드 검증(CI)만 존재. 헤드리스 Chrome(CDP) 수동 점검으로 연습·기초 모드 라우트를 확인했으나 점검 스크립트는 저장소에 없음. 필요 시 Playwright e2e 도입 검토 |
 
 ## 10. 개발 단계와 진행 현황
 
 | 단계 | 내용 | 상태 |
 | --- | --- | --- |
 | 0 | PRD 검토·확정 | ✅ (v0.2 갱신) |
-| 1 | `build_data.py` + `questions.json` 검증 | ✅ 8세트 119문항 |
+| 1 | `build_data.py` + `questions.json` 검증 | ✅ (초기 8세트 119문항 → 현재 23세트 344문항) |
 | 2 | MVP: 홈·세트·연습, 재생·녹음·진행 기록 | ✅ |
 | 3 | 실전 모드 | ✅ |
 | 4 | PWA + 배포(GitHub Actions) + 폰 실기기 테스트 | 🟡 배포 구성 완료, **실기기 테스트 미완료** |
 | 5 | 2차: 오프라인 캐시, 백업, 구간 반복, 오늘의 연습, 실전 이어하기 | ⬜ |
 | 6 | 콘텐츠 확장: Opic16~30 (질문·답변 음원 제작, 빌드·앱 반영) | ✅ 23세트 344문항 |
+| 7 | 답변 스크립트 개인정보 제거 + 음원 재생성 (공개 저장소 전제) | ✅ 현재 파일 기준. 히스토리 정리는 §9 |
+| 8 | 연습 모드: 주제 23개 + 문항별 키워드(beats/동사/명사) + 난이도 3단계 | ✅ |
+| 9 | 기초 모드: 표현 14카테고리 158개, 필러 6그룹 36개, 4단계 반복, 필러 챌린지 | ✅ |
+| 10 | Survey 모드: 실제 설문 양식 재현, 12개 규칙, 시나리오 편집, 가이드/시험 채점 | ✅ |
+| 11 | 폰 실기기 검증(녹음·침묵 측정·오디오 재생), 히스토리 정리, 오프라인 캐시·백업 | ⬜ |
 
 ## 11. 수용 기준 (MVP)
 
-- [x] 8개 세트 119문항이 목록에 나오고 그룹으로 묶여 있다.
+- [x] 23개 세트 344문항이 목록에 나오고 그룹으로 묶여 있다. (최신 → 이전 순)
 - [x] 문항을 열어 질문 MP3와 모델 답변 MP3가 재생된다. (속도·반복 동작)
 - [x] 스크립트가 보이고 굵은 표현이 강조된다.
 - [ ] 폰(Android/iOS)에서 녹음 → 재생이 되고, 앱을 닫았다 열어도 녹음이 남아 있다. (실기기 확인 필요)
 - [x] "어려움/보통/완료" 기록이 IndexedDB에 저장되어 새로고침 후에도 유지된다.
 - [x] 실전 모드로 세트 전 문항을 끝까지 진행할 수 있다.
-- [ ] 홈 화면에 설치할 수 있고, 360px 폭에서 화면이 깨지지 않는다. (실기기 확인 필요)
+- [ ] 홈 화면에 설치할 수 있고, 360px 폭에서 화면이 깨지지 않는다. (360px 에뮬레이션에서는 가로 스크롤 없음 확인, 실기기 확인 필요)
+- [x] 연습 모드에서 주제 → 문항 → 키워드 카드로 이동하고 난이도(Lv1~3)가 바뀌며, 자기 평가가 `#/hard`에 반영된다.
+- [x] 기초 모드에서 표현 4단계와 필러 카드가 재생되고, 마스터 표시가 새로고침 후에도 유지된다.
+- [x] Survey 모드에서 4~7번 합계 11개일 때 Next가 막히고 12개에서 열리며, 오답 시 빠뜨린 항목·잘못 고른 항목·개수 차이가 표시된다.
+- [ ] 필러 챌린지가 실제 목소리로 침묵을 올바르게 측정한다. (가짜 마이크로만 확인, 실기기 튜닝 필요)
 
 ## 12. 결정이 필요한 항목
 
-1. 호스팅 위치와 공개 범위 (§9 첫 번째 리스크)
+1. 호스팅 위치와 공개 범위 (§9 두 번째 리스크)
 2. 문항당 녹음 보관 개수 (현재 5개)
 3. 실전 모드 질문 다시 듣기 허용 횟수 (현재 1회)
 4. 앱 이름 (현재 앱 표시명 "OPIc 연습", 가칭 Eva Practice)
-5. `test2/` 신규 15개 세트(Opic16~30)를 앱에 포함할지, 포함한다면 `ansewer`와 같은 규칙으로 답변 스크립트를 만들지
+5. git 히스토리의 개인정보 정리 방식 (새 저장소 vs `main` 재작성 + force push)과 저장소 현재 공개 여부
 6. `docs/` 설계서를 현재 구조에 맞춰 개정할지 보관만 할지
+7. 오프라인 캐시 범위 (세트·모드별 선택 다운로드)와 총 음원 용량 허용 범위
+8. 필러 챌린지 목표 시간(현재 45초)과 침묵 판정 기준(현재 0.35초 이상 구간 집계, 2초 이상 끊김 표시)
 
-## 부록. v0.1 대비 주요 변경
+## 부록. 버전별 주요 변경
+
+### v0.4 (v0.3 대비)
+- Survey 모드(FR-90~96): 실제 Background Survey 양식 재현·시나리오 채점. `survey.json` 추가, 설문 선택은 다른 콘텐츠에 영향 없음. 서비스 워커 캐시 v5.
+
+### v0.3 (v0.2 대비)
+- 콘텐츠: 최신 문제 opic16~30(225문항) 추가 → 23세트 344문항, 답변 스크립트·음원 개인정보 제거.
+- 연습 모드(FR-70~74): 주제별 키워드 말하기. 데이터에 `themes`, 그룹 `theme`, 문항 `keywords`, 세트 `series` 추가.
+- 기초 모드(FR-80~85): 기본 표현·필러 반복 연습과 필러 챌린지. `basics.json`, 음원 633클립.
+- 파이프라인: `tools/themes.py`, `tools/basics_lib.py`, `gen_*_test2.py`, `gen_basic_mp3.py`, `keywords/`, `basics/` 추가. CI 검사에 기초 모드 음원 포함.
+- 홈: 최신/이전 문제 섹션 분리, 연습 모드·기초 모드 진입 카드. 서비스 워커 캐시 v4.
+- 리스크: git 히스토리 개인정보 문제 추가.
+
+### v0.2 (v0.1 대비)
 
 - 요구사항별 구현 상태 열 추가, 실제 폴더·파이프라인·CI 구조(§2) 신설.
 - 데이터 모델: `title` 필드, `aAudio: null` 허용, IndexedDB 키 구조(`key`, `byKey`) 실제 구현에 맞춰 수정.

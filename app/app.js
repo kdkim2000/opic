@@ -128,6 +128,12 @@ function route() {
     if (parts[1] === "chain") return viewBasicChain();
     return viewBasicHome();
   }
+  if (parts[0] === "survey") {
+    if (parts[1] === "run") return viewSurveyRun(params);
+    if (parts[1] === "result") return viewSurveyResult();
+    if (parts[1] === "edit") return viewSurveyEdit();
+    return viewSurveyHome();
+  }
   if (parts[0] === "drill") {
     if (parts.length >= 4) return viewDrillCard(decodeURIComponent(parts[1]), +parts[2], +parts[3]);
     if (parts[1]) return viewDrillTheme(decodeURIComponent(parts[1]));
@@ -166,7 +172,9 @@ async function viewHome() {
     `<a class="card drill-entry" href="#/drill"><b>연습 모드 — 주제별 키워드 말하기</b>
     <p class="muted">동사·명사 키워드만 보고 영어식으로 상상하며 이야기를 이어 말해 보세요.</p></a>` +
     `<a class="card drill-entry" href="#/basic"><b>기초 모드 — 기본 표현·필러 연습</b>
-    <p class="muted">자주 쓰는 표현을 묶어서 반복하고, 필러로 말이 끊기지 않게 이어 가는 연습을 해 보세요.</p></a>` + section("최신 문제 (opic16~30)", "latest", false) +
+    <p class="muted">자주 쓰는 표현을 묶어서 반복하고, 필러로 말이 끊기지 않게 이어 가는 연습을 해 보세요.</p></a>` +
+    `<a class="card drill-entry" href="#/survey"><b>Survey 모드 — Background Survey 선택 연습</b>
+    <p class="muted">실제 설문 화면처럼 직업·거주·여가·취미·운동·휴가 항목을 골라 보는 연습입니다.</p></a>` + section("최신 문제 (opic16~30)", "latest", false) +
     section("이전 문제 (opic1~8)", "legacy", true) + `<div class="card"><a class="btn" href="#/hard">어려움 문항 모아 연습 (${hardCount})</a>
     <p class="muted">녹음과 학습 기록은 이 기기 안에만 저장됩니다. 브라우저 데이터를 지우면 함께 삭제됩니다.</p></div>`;
 }
@@ -995,6 +1003,269 @@ async function viewBasicChain() {
     $("other").onclick = () => { myAudio?.pause(); if (pool.length > 1) { let n; do { n = pool[Math.floor(Math.random() * pool.length)]; } while (n === cur); cur = n; } intro(); };
   }
   intro();
+}
+
+/* ---------- Survey 모드 (Background Survey 선택 연습 — 다른 콘텐츠와 연동하지 않는 독립 기능) ---------- */
+let SURVEY = null, surveyP = null;
+/** survey.json 은 Survey 모드 진입 시 한 번만 로드해 캐시 */
+function loadSurvey() {
+  if (SURVEY) return Promise.resolve(SURVEY);
+  if (!surveyP) surveyP = fetch("data/survey.json", { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then((j) => (SURVEY = j)).catch((e) => { surveyP = null; throw e; });
+  return surveyP;
+}
+async function needSurvey(title) {
+  try { return await loadSurvey(); }
+  catch (e) {
+    $app.innerHTML = topbar(title) + `<p class="muted">Survey 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. (${esc(e.message)})</p>`;
+    return null;
+  }
+}
+let svRun = null;    // 진행 중 선택 상태(메모리)
+let svResult = null; // 마지막 채점 결과(메모리)
+const svQ = (S, id) => S.questions.find((q) => q.id === id);
+const svLabel = (q, id) => q.options.find((o) => o.id === id)?.ko ?? id;
+const svSum = (S, getN) => S.minTotal.questions.reduce((a, id) => a + getN(id), 0);
+const svNos = (S) => { const n = S.minTotal.questions.map((id) => svQ(S, id)?.no); return n.length > 1 ? n[0] + "~" + n[n.length - 1] : String(n[0]); };
+
+/** 저장된 시나리오(없거나 깨졌으면 기본값)를 질문별 {must, count} 로 정규화 */
+async function svLoadScenario(S) {
+  const saved = await db.getSetting("survey:scenario", null);
+  const out = {};
+  for (const q of S.questions) {
+    const valid = new Set(q.options.map((o) => o.id));
+    let src = saved && saved[q.id] && Array.isArray(saved[q.id].must) ? saved[q.id] : (S.defaultScenario || {})[q.id];
+    src = src || { must: [] };
+    const must = (src.must || []).filter((id) => valid.has(id));
+    out[q.id] = q.type === "single" ? { must: must.slice(0, 1), count: 1 }
+      : { must, count: Math.max(must.length, +src.count || must.length) };
+  }
+  return out;
+}
+
+/** 질문 1개 채점. 단일: 선택 ∈ must / 복수: must ⊆ 선택 이고 |선택| == count */
+function svGrade(q, selSet, sc) {
+  const must = sc.must, sel = [...selSet];
+  const missing = must.filter((id) => !selSet.has(id));
+  const extra = sel.filter((id) => !must.includes(id));
+  const expect = q.type === "single" ? 1 : (sc.count || must.length);
+  const ok = q.type === "single" ? sel.length === 1 && must.includes(sel[0]) : missing.length === 0 && sel.length === expect;
+  return { id: q.id, ok, missing, extra, selected: sel.length, expect, freeAllowed: Math.max(0, expect - must.length) };
+}
+
+/** 선택 카드 1개. f: { sel, hint, fb("ok"|"no"|"") } */
+function svOptHtml(q, o, f) {
+  const marks = [];
+  if (f.fb === "ok") marks.push("✔ 맞음");
+  else if (f.fb === "no") marks.push("⚠ 시나리오에 없음");
+  else if (f.sel) marks.push("✔ 선택");
+  if (f.hint && !f.sel) marks.push("★ 시나리오");
+  else if (f.hint && f.sel && !f.fb) marks.push("★");
+  return `<button type="button" class="opt${f.sel ? " sel" : ""}${f.hint ? " hint" : ""}${f.fb ? " " + f.fb : ""}" role="${q.type === "single" ? "radio" : "checkbox"}"
+    aria-checked="${!!f.sel}" data-q="${esc(q.id)}" data-o="${esc(o.id)}"><span class="o-txt"><span class="o-ko">${esc(o.ko)}</span><span class="o-en">${esc(o.en)}</span></span>
+    <span class="o-mark">${marks.map(esc).join(" ")}</span></button>`;
+}
+const svQHead = (q, note) => `<div class="sv-qh"><span class="sv-no">${esc(q.no)}.</span><span class="sv-qt"><b>${esc(q.ko)}</b><span class="o-en">${esc(q.en)}</span></span></div>
+  <p class="muted sv-note">${q.type === "single" ? "하나만 선택" : "복수 선택"}${note ? " · " + esc(note) : ""}</p>`;
+const svModeLabel = (m) => (m === "exam" ? "시험처럼" : "가이드");
+
+/* 모드 홈 */
+async function viewSurveyHome() {
+  svRun = null;
+  const S = await needSurvey("Survey 모드"); if (!S) return;
+  const sc = await svLoadScenario(S);
+  const hist = (await db.getSetting("survey:history", [])).slice(-5).reverse();
+  const total = svSum(S, (id) => sc[id].count);
+  const sum = S.questions.map((q) => {
+    const m = sc[q.id].must, free = q.type === "multi" ? sc[q.id].count - m.length : 0;
+    return `<div class="sv-sum"><b>${esc(q.no)}. ${esc(q.ko)}</b><div class="muted">${m.length ? esc(m.map((id) => svLabel(q, id)).join(", ")) : "(미지정)"}${q.type === "multi" ? ` · 총 ${sc[q.id].count}개${free > 0 ? ` (+자유 ${free}개)` : ""}` : ""}</div></div>`;
+  }).join("");
+  const fmtD = (iso) => { const d = new Date(iso); return isNaN(d) ? "" : `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
+  $app.innerHTML = topbar("Survey 모드") +
+    `<p class="muted">${esc(S.note || "이 연습은 앱의 다른 콘텐츠를 바꾸지 않습니다.")}</p>
+    <div class="card"><b>내 시나리오</b>${sum}
+      <p class="muted sv-total">${esc(svNos(S))}번 합계 ${total}개${total < S.minTotal.min ? ` (${S.minTotal.min}개 미만 — 수정 필요)` : ""}</p></div>
+    <div class="sv-actions"><a class="btn primary" id="svG" href="#/survey/run?mode=guide">가이드 연습</a>
+      <a class="btn primary" id="svE" href="#/survey/run?mode=exam">시험처럼 연습</a>
+      <a class="btn" href="#/survey/edit">내 시나리오 수정</a></div>
+    <div class="card"><b>최근 기록</b>${hist.length ? hist.map((h) => `<div class="qrow sv-hist"><span class="no wide">${esc(fmtD(h.date))}</span>
+      <span class="tt">${svModeLabel(h.mode)}</span><span>${Math.round(h.accuracy)}%</span><span class="muted">${fmtTime(h.seconds || 0)}</span></div>`).join("") : '<p class="muted">아직 기록이 없습니다.</p>'}</div>
+    <p class="muted">이 시나리오로 나올 수 있는 주제는 <a href="#/drill">연습 모드의 Survey 주제</a>에서 연습하세요. 시험 시기에 따라 항목·조건이 달라질 수 있습니다.</p>`;
+  document.getElementById("svG").onclick = document.getElementById("svE").onclick = () => { svRun = null; };
+}
+
+/* 실행 화면 */
+async function viewSurveyRun(params) {
+  const S = await needSurvey("Survey 모드"); if (!S) return;
+  const mode = params.get("mode") === "exam" ? "exam" : "guide";
+  const onlyIds = (params.get("only") || "").split(",").filter((id) => svQ(S, id));
+  const only = onlyIds.length ? new Set(onlyIds) : null;
+  const sc = await svLoadScenario(S);
+  const key = mode + "|" + onlyIds.join(",");
+  if (!svRun || svRun.key !== key) svRun = { key, mode, only, sc, t0: Date.now(), sel: Object.fromEntries(S.questions.map((q) => [q.id, new Set()])) };
+  const run = svRun;
+  const pages = S.pages.map((p) => p.questions.filter((id) => !only || only.has(id))).filter((a) => a.length);
+  if (!pages.length) return (location.hash = "#/survey");
+  const page = Math.min(pages.length, Math.max(1, parseInt(params.get("page"), 10) || 1));
+  const base = `#/survey/run?mode=${mode}${onlyIds.length ? "&only=" + onlyIds.join(",") : ""}`;
+  const last = page === pages.length;
+  const askedIds = pages.flat();
+
+  $app.innerHTML = `<div class="topbar"><a class="back" href="#/survey" aria-label="뒤로">‹</a>
+    <div class="title">${svModeLabel(mode)} 연습 · ${page}/${pages.length}쪽</div>${mode === "exam" ? '<span class="timer" id="svT">00:00</span>' : ""}</div>
+    <div id="svBody"></div>`;
+  const $ = (id) => document.getElementById(id);
+  const tb = $app.querySelector(".topbar");
+  const tick = () => { const t = $("svT"); if (t) t.textContent = fmtTime((Date.now() - run.t0) / 1000); };
+  tick();
+  const timerId = mode === "exam" ? setInterval(tick, 500) : null;
+  let submitting = false;
+  cleanup = () => { clearInterval(timerId); };
+
+  function draw() {
+    const y = window.scrollY;
+    const qs = pages[page - 1].map((id) => svQ(S, id));
+    const total = svSum(S, (id) => run.sel[id].size);
+    const needMin = !only && S.minTotal.questions.every((id) => pages[page - 1].includes(id));
+    const singlesDone = qs.every((q) => q.type !== "single" || run.sel[q.id].size > 0);
+    let reason = "";
+    if (!singlesDone) reason = "모든 질문에서 하나씩 선택해 주세요.";
+    else if (needMin && total < S.minTotal.min) reason = `${svNos(S)}번 합계가 ${S.minTotal.min}개 이상이어야 합니다. (현재 ${total}개)`;
+    $("svBody").innerHTML =
+      (needMin ? `<div class="counter ${total >= S.minTotal.min ? "met" : ""}" id="svCnt" style="top:${tb.offsetHeight}px">선택 ${total}개 / ${S.minTotal.min}개 이상 필요${total >= S.minTotal.min ? " ✔" : ""}</div>` : "") +
+      qs.map((q) => {
+        const c = run.sc[q.id], selSet = run.sel[q.id];
+        const note = mode === "guide" ? (q.type === "single" ? "총 1개 선택" : `총 ${c.count}개 선택 (현재 ${selSet.size}개)`) : (q.type === "multi" ? `현재 ${selSet.size}개` : "");
+        return `<section class="card sv-q">${svQHead(q, note)}<div class="sv-opts" role="${q.type === "single" ? "radiogroup" : "group"}">` +
+          q.options.map((o) => {
+            const sel = selSet.has(o.id), inMust = c.must.includes(o.id);
+            return svOptHtml(q, o, { sel, hint: mode === "guide" && inMust, fb: mode === "guide" && sel ? (inMust ? "ok" : "no") : "" });
+          }).join("") + `</div></section>`;
+      }).join("") +
+      `<div class="sv-actions">${page > 1 ? `<a class="btn" href="${base}&page=${page - 1}">‹ Back</a>` : ""}
+        <button type="button" class="primary" id="svNext" ${reason ? "disabled" : ""}>${last ? "제출" : "Next ›"}</button></div>` +
+      `<p class="muted sv-reason" id="svReason" ${reason ? "" : "hidden"}>${esc(reason)}</p>`;
+    window.scrollTo(0, y);
+    $("svNext").onclick = async () => {
+      if (submitting) return;
+      if (!last) { location.hash = `${base}&page=${page + 1}`; return; }
+      submitting = true; $("svNext").disabled = true;
+      const seconds = Math.round((Date.now() - run.t0) / 1000);
+      const per = askedIds.map((id) => svGrade(svQ(S, id), run.sel[id], run.sc[id]));
+      const correct = per.filter((r) => r.ok).length;
+      const accuracy = per.length ? (correct / per.length) * 100 : 0;
+      let prev = null;
+      try {
+        const hist = await db.getSetting("survey:history", []);
+        prev = hist.length ? hist[hist.length - 1] : null;
+        await db.setSetting("survey:history", [...hist, { date: new Date().toISOString(), mode, accuracy: Math.round(accuracy * 10) / 10, seconds, wrong: per.length - correct }].slice(-20));
+      } catch (e) { toast("기록을 저장하지 못했습니다"); }
+      svResult = { mode, per, correct, accuracy, seconds, prev };
+      svRun = null;
+      location.hash = "#/survey/result";
+    };
+  }
+  $("svBody").addEventListener("click", (e) => {
+    const b = e.target.closest(".opt"); if (!b) return;
+    const q = svQ(S, b.dataset.q), set = run.sel[q.id], id = b.dataset.o;
+    if (q.type === "single") { set.clear(); set.add(id); }
+    else if (set.has(id)) set.delete(id); else set.add(id);
+    draw();
+  });
+  draw();
+}
+
+/* 결과 */
+async function viewSurveyResult() {
+  const S = await needSurvey("Survey 결과"); if (!S) return;
+  const R = svResult;
+  if (!R) return (location.hash = "#/survey");
+  const pct = Math.round(R.accuracy);
+  let cmp = "첫 기록입니다";
+  if (R.prev) { const d = pct - Math.round(R.prev.accuracy); cmp = `직전 기록(${Math.round(R.prev.accuracy)}%) 대비 ${d > 0 ? "+" : ""}${d}%p`; }
+  const wrongIds = R.per.filter((r) => !r.ok).map((r) => r.id);
+  const list = (q, ids) => ids.map((id) => svLabel(q, id)).join(", ");
+  $app.innerHTML = topbar("Survey 결과", "#/survey") + `<div class="card"><div class="report">
+      <div><span class="big-n">${pct}%</span>정확도 (${R.correct}/${R.per.length})</div><div><span class="big-n">${fmtTime(R.seconds)}</span>소요 시간</div></div>
+      <p class="muted">${esc(svModeLabel(R.mode))} · ${esc(cmp)}</p></div>` +
+    R.per.map((r) => {
+      const q = svQ(S, r.id);
+      const lines = [];
+      if (!r.ok) {
+        if (r.missing.length) lines.push(`빠뜨린 항목: ${esc(list(q, r.missing))}`);
+        if (r.extra.length) lines.push(`${q.type === "single" ? "선택한 항목" : "시나리오에 없는데 고른 항목"}: ${esc(list(q, r.extra))}${r.freeAllowed ? ` (자유 선택 허용 ${r.freeAllowed}개)` : ""}`);
+        if (q.type === "multi" && r.selected !== r.expect) lines.push(`개수: 선택 ${r.selected}개 / 기준 ${r.expect}개 (${r.selected > r.expect ? "+" : ""}${r.selected - r.expect})`);
+        if (q.type === "single" && !r.selected) lines.push("선택하지 않았습니다");
+      }
+      return `<div class="card sv-res ${r.ok ? "ok" : "bad"}"><div class="row spread"><b>${esc(q.no)}. ${esc(q.ko)}</b><span class="${r.ok ? "ck" : "sv-warn"}">${r.ok ? "✅ 정답" : "⚠ 확인"}</span></div>
+        ${lines.map((l) => `<p class="muted sv-line">${l}</p>`).join("")}</div>`;
+    }).join("") +
+    `<div class="sv-actions">${wrongIds.length ? `<a class="btn primary" id="svW" href="#/survey/run?mode=${R.mode}&only=${wrongIds.join(",")}">틀린 질문만 다시</a>` : ""}
+      <a class="btn ${wrongIds.length ? "" : "primary"}" id="svA" href="#/survey/run?mode=${R.mode}">처음부터 다시</a>
+      <a class="btn" href="#/survey">모드 홈</a></div>`;
+  const reset = () => { svRun = null; };
+  const w = document.getElementById("svW"); if (w) w.onclick = reset;
+  document.getElementById("svA").onclick = reset;
+}
+
+/* 시나리오 편집 */
+async function viewSurveyEdit() {
+  const S = await needSurvey("시나리오 수정"); if (!S) return;
+  const sc = await svLoadScenario(S);
+  const auto = {}; // count 가 must 개수를 따라가는 중인지
+  for (const q of S.questions) auto[q.id] = sc[q.id].count === sc[q.id].must.length;
+  const $ = (id) => document.getElementById(id);
+  const warnHtml = () => {
+    const t = svSum(S, (id) => sc[id].count);
+    return t < S.minTotal.min ? `<span class="sv-warn">⚠ ${svNos(S)}번 합계 ${t}개 — ${S.minTotal.min}개 이상이어야 실제 설문처럼 진행됩니다.</span>` : `<span class="ck">✔ 합계 ${t}개</span>`;
+  };
+  $app.innerHTML = topbar("시나리오 수정", "#/survey") +
+    `<p class="muted">반드시 고를 항목을 정하세요. 복수 질문은 총 선택 개수를 정하면 지정 외 나머지는 자유 선택이 됩니다.</p><div id="svBody"></div>
+     <div class="sv-actions"><button type="button" class="primary" id="svSave">저장</button><button type="button" id="svReset">기본값으로 되돌리기</button></div>`;
+  function draw() {
+    const y = window.scrollY;
+    $("svBody").innerHTML = S.questions.map((q) => {
+      const c = sc[q.id];
+      return `<section class="card sv-q">${svQHead(q, "")}<div class="sv-opts">` +
+        q.options.map((o) => svOptHtml(q, o, { sel: c.must.includes(o.id) })).join("") + `</div>` +
+        (q.type === "multi" ? `<label class="sv-count">총 개수 <input type="number" inputmode="numeric" min="${c.must.length}" max="${q.options.length}" value="${c.count}" data-cnt="${esc(q.id)}"> 개
+          <span class="muted">(지정 ${c.must.length}개${c.count > c.must.length ? ` + 자유 ${c.count - c.must.length}개` : ""})</span></label>` : "") + `</section>`;
+    }).join("") + `<p class="sv-sumwarn" id="svWarn">${warnHtml()}</p>`;
+    window.scrollTo(0, y);
+  }
+  $("svBody").addEventListener("click", (e) => {
+    const b = e.target.closest(".opt"); if (!b) return;
+    const q = svQ(S, b.dataset.q), c = sc[q.id], id = b.dataset.o;
+    if (q.type === "single") c.must = [id];
+    else {
+      c.must = c.must.includes(id) ? c.must.filter((x) => x !== id) : [...c.must, id];
+      if (auto[q.id] || c.count < c.must.length) c.count = c.must.length;
+    }
+    draw();
+  });
+  $("svBody").addEventListener("input", (e) => {
+    const inp = e.target.closest("[data-cnt]"); if (!inp) return;
+    const q = svQ(S, inp.dataset.cnt), c = sc[q.id];
+    const n = parseInt(inp.value, 10);
+    if (!isNaN(n)) { c.count = Math.min(q.options.length, Math.max(c.must.length, n)); auto[q.id] = c.count === c.must.length; }
+    $("svWarn").innerHTML = warnHtml();
+  });
+  $("svBody").addEventListener("change", (e) => { if (e.target.closest("[data-cnt]")) draw(); });
+  $("svSave").onclick = async () => {
+    const miss = S.questions.find((q) => q.type === "single" && sc[q.id].must.length !== 1);
+    if (miss) return toast(`${miss.no}번 질문의 항목을 선택해 주세요`);
+    const obj = {};
+    for (const q of S.questions) obj[q.id] = { must: sc[q.id].must.slice(), count: sc[q.id].count };
+    await db.setSetting("survey:scenario", obj);
+    toast("시나리오를 저장했습니다");
+  };
+  $("svReset").onclick = async () => {
+    await db.setSetting("survey:scenario", null);
+    const fresh = await svLoadScenario(S);
+    for (const q of S.questions) { sc[q.id] = fresh[q.id]; auto[q.id] = fresh[q.id].count === fresh[q.id].must.length; }
+    draw(); toast("기본값으로 되돌렸습니다");
+  };
+  draw();
 }
 
 /* ---------- 시작 ---------- */
