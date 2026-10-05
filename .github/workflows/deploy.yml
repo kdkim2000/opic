@@ -38,6 +38,14 @@ jobs:
           missing = [p for q in qs for p in (q["qAudio"], q["aAudio"]) if p and not (app / p).exists()]
           print(f"sets={len(d['sets'])} questions={len(qs)} missing_audio={len(missing)}")
           assert qs and not missing, missing[:5]
+          bp = app / "data" / "basics.json"
+          if bp.exists():
+              b = json.loads(bp.read_text(encoding="utf-8"))
+              items = [i for s in b["categories"] + b["fillerGroups"] for i in s["items"]]
+              paths = [p for i in items for p in [i["audio"]] + [e["audio"] for e in i["examples"]]]
+              bmiss = [p for p in paths if not (app / p).exists()]
+              print(f"basics items={len(items)} audio={len(paths)} missing_audio={len(bmiss)}")
+              assert not bmiss, bmiss[:5]
           PY
 
       - uses: actions/configure-pages@v5

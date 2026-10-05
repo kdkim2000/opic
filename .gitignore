@@ -1,6 +1,7 @@
 # --- 빌드 산출물 (tools/build_data.py 가 생성한다. GitHub Actions 가 배포 때마다 다시 만든다) ---
 app/audio/
 app/data/questions.json
+app/data/basics.json
 
 # --- Python ---
 __pycache__/

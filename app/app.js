@@ -119,6 +119,20 @@ function route() {
   if (parts[0] === "practice") return viewPractice(+parts[1], +parts[2], params);
   if (parts[0] === "exam") return viewExam(+parts[1]);
   if (parts[0] === "hard") return viewHard();
+  if (parts[0] === "basic") {
+    if (parts[1] === "x" && parts[2]) {
+      const cat = decodeURIComponent(parts[2]);
+      return parts[3] !== undefined ? viewBasicCard("x", cat, +parts[3] || 0, params) : viewBasicCat(cat);
+    }
+    if (parts[1] === "f" && parts[2]) return viewBasicCard("f", decodeURIComponent(parts[2]), +parts[3] || 0, params);
+    if (parts[1] === "chain") return viewBasicChain();
+    return viewBasicHome();
+  }
+  if (parts[0] === "drill") {
+    if (parts.length >= 4) return viewDrillCard(decodeURIComponent(parts[1]), +parts[2], +parts[3]);
+    if (parts[1]) return viewDrillTheme(decodeURIComponent(parts[1]));
+    return viewDrillHome();
+  }
   return viewHome();
 }
 window.addEventListener("hashchange", route);
@@ -148,7 +162,11 @@ async function viewHome() {
       ? `<details class="series"><summary>${head}</summary>${cards}</details>`
       : `<section class="series"><div class="sec-head">${head}</div>${cards}</section>`;
   };
-  $app.innerHTML = `<h1>OPIc 연습</h1>` + section("최신 문제 (opic16~30)", "latest", false) +
+  $app.innerHTML = `<h1>OPIc 연습</h1>` +
+    `<a class="card drill-entry" href="#/drill"><b>연습 모드 — 주제별 키워드 말하기</b>
+    <p class="muted">동사·명사 키워드만 보고 영어식으로 상상하며 이야기를 이어 말해 보세요.</p></a>` +
+    `<a class="card drill-entry" href="#/basic"><b>기초 모드 — 기본 표현·필러 연습</b>
+    <p class="muted">자주 쓰는 표현을 묶어서 반복하고, 필러로 말이 끊기지 않게 이어 가는 연습을 해 보세요.</p></a>` + section("최신 문제 (opic16~30)", "latest", false) +
     section("이전 문제 (opic1~8)", "legacy", true) + `<div class="card"><a class="btn" href="#/hard">어려움 문항 모아 연습 (${hardCount})</a>
     <p class="muted">녹음과 학습 기록은 이 기기 안에만 저장됩니다. 브라우저 데이터를 지우면 함께 삭제됩니다.</p></div>`;
 }
@@ -328,6 +346,194 @@ async function viewPractice(sid, no, params) {
   };
 }
 
+/* ---------- 연습 모드(주제별 키워드 말하기) ---------- */
+const seriesRank = (sid) => { const st = DATA.sets.find((x) => x.id === sid); return ((st?.series || (sid >= 16 ? "latest" : "legacy")) === "latest") ? 0 : 1; };
+/** 주제 안 문항 큐: 최신 시리즈 먼저, 그 안에서는 세트 번호·원래 순서 */
+function themeQueue(themeId) {
+  return allQuestions().map((x, i) => ({ ...x, i })).filter((x) => x.g.theme === themeId)
+    .sort((a, b) => seriesRank(a.s) - seriesRank(b.s) || a.s - b.s || a.i - b.i);
+}
+const drillHref = (themeId, x) => `#/drill/${encodeURIComponent(themeId)}/${x.s}/${x.q.no}`;
+
+async function viewDrillHome() {
+  const themes = (DATA.themes || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  if (!themes.length) {
+    $app.innerHTML = topbar("연습 모드") + `<p class="muted">주제 데이터가 아직 준비되지 않았습니다. 데이터를 다시 빌드한 뒤 확인해 주세요.</p>`;
+    return;
+  }
+  const prog = Object.fromEntries((await db.allProgress()).map((p) => [p.key, p]));
+  const all = allQuestions();
+  const SECS = [["intro", "① 자기소개"], ["survey", "② Survey 주제"], ["sudden", "③ 돌발 주제 (비슷한 주제 묶음)"], ["roleplay", "④ 롤플레이 (상황별)"]];
+  const card = (t) => {
+    const qs = all.filter((x) => x.g.theme === t.id);
+    const done = qs.filter((x) => prog[keyOf(x.s, x.q.no)]?.status === "done").length;
+    return `<a class="card theme-card" href="#/drill/${encodeURIComponent(t.id)}"><div class="row spread"><b>${esc(t.label)}</b>
+      <span class="muted">${done}/${qs.length} 완료</span></div>
+      <div class="bar"><i style="width:${qs.length ? (done / qs.length) * 100 : 0}%"></i></div>
+      <span class="muted">문항 ${qs.length}개</span></a>`;
+  };
+  const known = new Set(SECS.map((x) => x[0]));
+  const others = themes.filter((t) => !known.has(t.kind));
+  const secHtml = SECS.map(([kind, title]) => {
+    const ts = themes.filter((t) => t.kind === kind);
+    return ts.length ? `<h2>${esc(title)}</h2>${ts.map(card).join("")}` : "";
+  }).join("") + (others.length ? `<h2>기타</h2>${others.map(card).join("")}` : "");
+  $app.innerHTML = topbar("연습 모드") + `<p class="muted">주제를 골라 키워드로 이야기를 이어 말하는 연습입니다. 진행 기록은 학습·실전 모드와 공유됩니다.</p>` + secHtml;
+}
+
+async function viewDrillTheme(themeId) {
+  const theme = (DATA.themes || []).find((t) => t.id === themeId);
+  if (!theme) return (location.hash = "#/drill");
+  const prog = Object.fromEntries((await db.allProgress()).map((p) => [p.key, p]));
+  const queue = themeQueue(themeId);
+  $app.innerHTML = topbar(theme.label, "#/drill") + (queue.length
+    ? `<a class="btn primary big" href="${drillHref(themeId, queue[0])}">처음부터 연속 연습</a><div class="card">` +
+      queue.map((x) => {
+        const p = prog[keyOf(x.s, x.q.no)];
+        return `<a class="qrow" href="${drillHref(themeId, x)}"><span class="no wide">${x.s}-Q${x.q.no}</span><span class="tt">${esc(x.q.title || x.q.text)}</span>
+          ${badge(p?.status)}${p?.attempts ? `<span class="muted">${p.attempts}회</span>` : ""}</a>`;
+      }).join("") + `</div>`
+    : `<p class="muted">이 주제에 해당하는 문항이 없습니다.</p>`);
+}
+
+async function viewDrillCard(themeId, sid, no) {
+  const found = findQ(sid, no);
+  if (!found) return (location.hash = "#/drill");
+  const { q } = found;
+  const theme = (DATA.themes || []).find((t) => t.id === themeId);
+  const prog = (await db.getProgress(keyOf(sid, no))) || { status: "new", attempts: 0 };
+  let level = +(await db.getSetting("drillLevel", 1));
+  if (![1, 2, 3].includes(level)) level = 1;
+
+  const queue = themeQueue(themeId);
+  const idx = queue.findIndex((x) => x.s === sid && x.q.no === no);
+  const prev = idx > 0 ? drillHref(themeId, queue[idx - 1]) : null;
+  const next = idx >= 0 && queue[idx + 1] ? drillHref(themeId, queue[idx + 1]) : null;
+
+  const kw = q.keywords || {};
+  const beats = kw.beats || [], verbs = kw.verbs || [], nouns = kw.nouns || [];
+  const hasKw = beats.length + verbs.length + nouns.length > 0;
+  const fallback = !hasKw ? (q.keyPoints || []) : [];
+
+  $app.innerHTML = topbar(`${theme ? theme.label : "연습"} · ${sid}-Q${no}`, `#/drill/${encodeURIComponent(themeId)}`) + `
+    <div class="card"><div class="row spread"><b>질문</b><button id="qPlay">▶ 질문 듣기</button></div>
+      <p class="qtext">${esc(q.text)}</p></div>
+    <div class="card"><div class="row spread"><b>스토리 키워드</b>
+      <div class="lvl" role="group" aria-label="난이도">${[1, 2, 3].map((n) => `<button data-lv="${n}">Lv${n}</button>`).join("")}</div></div>
+      <p class="muted" id="lvHint"></p><div id="scaffold"></div></div>
+    <div class="card"><b>내 녹음</b> <span class="muted">목표 60~90초</span>
+      <div class="row spread" style="margin:8px 0"><button id="rec" class="rec">● 녹음</button><span class="timer" id="recTimer">00:00</span></div>
+      <div id="recList"></div></div>
+    <div class="card"><b>확인하기</b>
+      <div class="row" style="margin:8px 0"><button id="showScript">스크립트 보기</button>
+        ${q.aAudio ? `<button id="aPlay">🔊 모델 답변 듣기</button>` : ""}</div>
+      <div class="script" id="script" hidden>${q.script ? renderScript(q.script) : '<p class="muted">스크립트가 없습니다.</p>'}</div></div>
+    <div class="card"><b>자기 평가</b> <span class="muted" id="attempts">${prog.attempts || 0}회 연습</span>
+      <div class="row" style="margin-top:8px">${["hard", "ok", "done"].map((k) => `<button data-st="${k}" class="${prog.status === k ? "sel" : ""}">${STATUS[k]}</button>`).join("")}</div></div>
+    <div class="nav">${prev ? `<button onclick="location.hash='${prev}'">‹ 이전</button>` : "<span style='flex:1'></span>"}
+      ${next ? `<button class="primary" onclick="location.hash='${next}'">다음 ›</button>` : "<span style='flex:1'></span>"}</div>`;
+
+  const $ = (id) => document.getElementById(id);
+  const qAudio = new Audio(q.qAudio);
+  const aAudio = q.aAudio ? new Audio(q.aAudio) : null;
+  let myAudio = null, urls = [], recorder = null, stream = null, timerId = null, recording = false;
+  const used = new Set();
+  const stopAll = () => [qAudio, aAudio, myAudio].filter(Boolean).forEach((a) => a.pause());
+  const setBusy = (busy) => ["qPlay", "aPlay"].forEach((id) => $(id) && ($(id).disabled = busy));
+
+  // 스캐폴드: Lv1 beats+동사+명사 / Lv2 동사+명사 / Lv3 명사만
+  const HINT = { 1: "Lv1 · 장면 단계 + 동사 + 명사", 2: "Lv2 · 동사 + 명사", 3: "Lv3 · 명사만 (나머지는 상상해서!)" };
+  const chipGroup = (label, cls, list) => (list.length ? `<div class="chips"><span class="chip-label">${label}</span>${list.map((w) => {
+    const k = cls + ":" + w;
+    return `<button class="chip ${cls}${used.has(k) ? " used" : ""}" data-chip="${esc(k)}" aria-pressed="${used.has(k)}">${esc(w)}</button>`;
+  }).join("")}</div>` : "");
+  const shownChips = () => (!hasKw ? fallback.map((w) => "kp:" + w)
+    : [...(level <= 2 ? verbs.map((w) => "verb:" + w) : []), ...nouns.map((w) => "noun:" + w)]);
+  function renderScaffold() {
+    document.querySelectorAll("[data-lv]").forEach((b) => b.classList.toggle("sel", +b.dataset.lv === level));
+    $("lvHint").textContent = hasKw ? HINT[level] : "";
+    $("scaffold").innerHTML = !hasKw
+      ? `<p class="muted">키워드 준비 중입니다. 대신 스크립트의 핵심 표현을 참고하세요.</p>${chipGroup("표현", "kp", fallback)}`
+      : (level === 1 && beats.length ? `<ol class="beats">${beats.map((b) => `<li>${esc(b)}</li>`).join("")}</ol>` : "") +
+        (level <= 2 ? chipGroup("동사", "verb", verbs) : "") + chipGroup("명사", "noun", nouns);
+    $("scaffold").querySelectorAll("[data-chip]").forEach((b) => (b.onclick = () => {
+      const k = b.dataset.chip;
+      if (used.has(k)) used.delete(k); else used.add(k);
+      b.classList.toggle("used", used.has(k)); b.setAttribute("aria-pressed", used.has(k));
+      const all = shownChips();
+      if (used.has(k) && all.length && all.every((c) => used.has(c))) toast("키워드를 모두 사용했어요!");
+    }));
+  }
+  document.querySelectorAll("[data-lv]").forEach((b) => (b.onclick = () => {
+    level = +b.dataset.lv; db.setSetting("drillLevel", level); renderScaffold();
+  }));
+  renderScaffold();
+
+  // 질문 / 스크립트 / 모델 답변
+  $("qPlay").onclick = () => { stopAll(); qAudio.currentTime = 0; qAudio.playbackRate = 1; qAudio.play(); };
+  $("showScript").onclick = () => { const h = $("script").toggleAttribute("hidden"); $("showScript").textContent = h ? "스크립트 보기" : "스크립트 숨기기"; };
+  if (aAudio) {
+    aAudio.onplay = () => ($("aPlay").textContent = "⏸ 일시정지");
+    aAudio.onpause = () => ($("aPlay").textContent = "🔊 모델 답변 듣기");
+    $("aPlay").onclick = async () => {
+      if (!aAudio.paused) { aAudio.pause(); return; }
+      stopAll(); aAudio.playbackRate = +(await db.getSetting("speed", "0.9")); aAudio.play();
+    };
+  }
+  // 평가
+  document.querySelectorAll("[data-st]").forEach((b) => (b.onclick = async () => {
+    await updateProgress(sid, no, { status: b.dataset.st, lastPracticed: new Date().toISOString().slice(0, 10) });
+    document.querySelectorAll("[data-st]").forEach((x) => x.classList.toggle("sel", x === b));
+    toast(`"${STATUS[b.dataset.st]}"로 표시했습니다`);
+  }));
+
+  // 내 녹음 목록
+  async function renderRecs() {
+    urls.forEach(URL.revokeObjectURL); urls = [];
+    const list = (await db.recs(keyOf(sid, no))).sort((a, b) => b.createdAt - a.createdAt);
+    $("recList").innerHTML = list.length ? list.map((r, i) => {
+      const u = URL.createObjectURL(r.blob); urls.push(u);
+      const d = new Date(r.createdAt);
+      return `<div class="rec-item"><span class="grow">${i === 0 ? "최근 · " : ""}${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} · ${fmtTime(r.durationSec)}</span>
+        <button data-play="${u}">▶</button><button data-del="${r.id}">🗑</button></div>`;
+    }).join("") : '<p class="muted">아직 녹음이 없습니다.</p>';
+    $("recList").querySelectorAll("[data-play]").forEach((b) => (b.onclick = () => {
+      if (recording) return;
+      stopAll(); myAudio = new Audio(b.dataset.play); myAudio.play();
+    }));
+    $("recList").querySelectorAll("[data-del]").forEach((b) => (b.onclick = async () => {
+      await db.delRec(+b.dataset.del); renderRecs();
+    }));
+  }
+  renderRecs();
+
+  // 녹음 (녹음 중에는 오디오 재생 차단)
+  $("rec").onclick = async () => {
+    if (recording) {
+      clearInterval(timerId);
+      const r = await recorder.stop();
+      stream.getTracks().forEach((t) => t.stop());
+      recording = false; $("rec").textContent = "● 녹음"; setBusy(false);
+      await saveRecording(sid, no, r.blob, r.mime, r.durationSec);
+      $("attempts").textContent = `${(await db.getProgress(keyOf(sid, no))).attempts}회 연습`;
+      renderRecs(); toast("녹음을 저장했습니다");
+      return;
+    }
+    try { stream = await getMic(); } catch (e) { return toast(e.message); }
+    stopAll(); setBusy(true);
+    recorder = startRecording(stream); recording = true;
+    $("rec").textContent = "■ 정지";
+    const t0 = Date.now();
+    timerId = setInterval(() => ($("recTimer").textContent = fmtTime((Date.now() - t0) / 1000)), 250);
+  };
+
+  cleanup = () => {
+    clearInterval(timerId); stopAll();
+    if (recording && stream) stream.getTracks().forEach((t) => t.stop());
+    urls.forEach(URL.revokeObjectURL);
+  };
+}
+
 /* ---------- 실전 모드 ---------- */
 async function viewExam(sid) {
   const set = DATA.sets.find((s) => s.id === sid);
@@ -404,6 +610,391 @@ async function viewExam(sid) {
       play();
     });
   }
+}
+
+/* ---------- 기초 모드(기본 표현 · 필러 연습) ---------- */
+let BASICS = null, basicsP = null;
+/** basics.json 은 기초 모드 진입 시 한 번만 로드해 캐시. 실패하면 null 반환 + 안내문 */
+function loadBasics() {
+  if (BASICS) return Promise.resolve(BASICS);
+  if (!basicsP) basicsP = fetch("data/basics.json", { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then((j) => (BASICS = j)).catch((e) => { basicsP = null; throw e; });
+  return basicsP;
+}
+async function needBasics(title) {
+  try { return await loadBasics(); }
+  catch (e) {
+    $app.innerHTML = topbar(title) + `<p class="muted">기초 모드 데이터를 불러오지 못했습니다. 데이터를 다시 빌드한 뒤 확인해 주세요. (${esc(e.message)})</p>`;
+    return null;
+  }
+}
+const today = () => new Date().toISOString().slice(0, 10);
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const bKey = (id) => "basic:" + id;
+async function loadMastery(items) {
+  const m = new Map();
+  await Promise.all(items.map(async (it) => m.set(it.id, await db.getSetting(bKey(it.id), null))));
+  return m;
+}
+/** 진행 기록 저장: {mastered, reps, last}. rep=true 면 연습 횟수 +1 */
+async function bumpBasic(id, { mastered, rep }) {
+  const cur = (await db.getSetting(bKey(id), null)) || { mastered: false, reps: 0 };
+  const next = { mastered: mastered ?? !!cur.mastered, reps: (cur.reps || 0) + (rep ? 1 : 0), last: today() };
+  await db.setSetting(bKey(id), next);
+  return next;
+}
+/** 오디오 재생 + 대기를 한 곳에서 관리(정리 시 전부 취소) */
+function makeAudioCtl() {
+  let a = null, pending = null; const timers = new Map();
+  const ctl = {
+    play(src, rate = 1) {
+      ctl.stop();
+      return new Promise((res) => {
+        const au = a = new Audio(src); au.playbackRate = rate; pending = res;
+        const fin = (v) => { if (a === au) { a = null; pending = null; } res(v); };
+        au.onended = () => fin({ ok: true, dur: (isFinite(au.duration) ? au.duration : 0) / rate });
+        au.onerror = () => fin({ ok: false, dur: 0 });
+        au.play().catch(() => fin({ ok: false, dur: 0 }));
+      });
+    },
+    sleep: (ms) => new Promise((res) => { const id = setTimeout(() => { timers.delete(id); res(); }, ms); timers.set(id, res); }),
+    stop() {
+      if (a) { a.onended = a.onerror = null; a.pause(); a = null; }
+      if (pending) { const p = pending; pending = null; p({ ok: false, cancelled: true, dur: 0 }); }
+      timers.forEach((res, id) => { clearTimeout(id); res(); }); timers.clear();
+    },
+  };
+  return ctl;
+}
+const SPEEDS = ["0.75", "0.9", "1"];
+const speedSel = (v) => `<select class="spd" aria-label="배속">${SPEEDS.map((x) => `<option value="${x}" ${x === v ? "selected" : ""}>${x}x</option>`).join("")}</select>`;
+
+/* 기초 홈 */
+async function viewBasicHome() {
+  const B = await needBasics("기초 모드"); if (!B) return;
+  const all = [...B.categories.flatMap((c) => c.items), ...B.fillerGroups.flatMap((g) => g.items)];
+  const mast = await loadMastery(all);
+  const card = (href, label, items) => {
+    const done = items.filter((it) => mast.get(it.id)?.mastered).length;
+    return `<a class="card theme-card" href="${href}"><div class="row spread"><b>${esc(label)}</b><span class="muted">${done}/${items.length} 마스터</span></div>
+      <div class="bar"><i style="width:${items.length ? (done / items.length) * 100 : 0}%"></i></div><span class="muted">항목 ${items.length}개</span></a>`;
+  };
+  $app.innerHTML = topbar("기초 모드") +
+    `<p class="muted">자주 쓰는 표현을 반복해 입에 붙이고, 필러로 말이 끊기지 않게 이어 가는 연습입니다.</p>` +
+    `<h2>① 기본 표현</h2>` + B.categories.map((c) => card(`#/basic/x/${encodeURIComponent(c.id)}`, c.label, c.items)).join("") +
+    `<h2>② 필러 연습</h2>` + B.fillerGroups.map((g) => card(`#/basic/f/${encodeURIComponent(g.id)}`, g.label, g.items)).join("") +
+    `<a class="btn primary big" href="#/basic/chain" style="margin-top:12px">필러 챌린지 — 45초 이어 말하기</a>`;
+}
+
+/* 카테고리 항목 목록 */
+async function viewBasicCat(catId) {
+  const B = await needBasics("기초 모드"); if (!B) return;
+  const cat = B.categories.find((c) => c.id === catId);
+  if (!cat) return (location.hash = "#/basic");
+  const mast = await loadMastery(cat.items);
+  const base = `#/basic/x/${encodeURIComponent(catId)}`;
+  $app.innerHTML = topbar(cat.label, "#/basic") +
+    `<div class="row"><a class="btn primary grow" href="${base}/0">처음부터 묶어서 연습</a><a class="btn grow" href="${base}/0?tab=mix">섞어 말하기</a></div><div class="card">` +
+    cat.items.map((it, i) => `<a class="qrow brow" href="${base}/${i}"><span class="no">${i + 1}</span>
+      <span class="tt2"><b>${esc(it.pattern)}</b><span class="muted">${esc(it.meaning)}</span></span>${mast.get(it.id)?.mastered ? '<span class="ck" title="마스터">✔</span>' : ""}</a>`).join("") + `</div>`;
+}
+
+/* 패턴/필러 카드(공통) — kind: "x" 표현, "f" 필러 */
+async function viewBasicCard(kind, gid, idx, params) {
+  const B = await needBasics("기초 모드"); if (!B) return;
+  const grp = (kind === "x" ? B.categories : B.fillerGroups).find((g) => g.id === gid);
+  if (!grp) return (location.hash = "#/basic");
+  const list = grp.items;
+  if (!list.length) return (location.hash = "#/basic");
+  if (idx < 0 || idx >= list.length) return (location.hash = `#/basic/${kind}/${encodeURIComponent(gid)}/0`);
+  const item = list[idx];
+  const key = (it) => (kind === "x" ? it.pattern : it.filler);
+  const base = `#/basic/${kind}/${encodeURIComponent(gid)}`;
+  const TABS = kind === "x" ? [["listen", "① 듣기"], ["repeat", "② 따라 말하기"], ["swap", "③ 바꿔 말하기"], ["mix", "④ 섞어 말하기"]]
+    : [["listen", "① 듣기"], ["repeat", "② 따라 말하기"]];
+  let tab = params.get("tab"); if (!TABS.some((t) => t[0] === tab)) tab = "listen";
+  let speed = await db.getSetting("basicSpeed", "0.9"); if (!SPEEDS.includes(speed)) speed = "0.9";
+  let mast = await db.getSetting(bKey(item.id), null);
+  const sents = [{ tag: kind === "x" ? "패턴" : "필러", en: key(item), ko: item.meaning, audio: item.audio },
+    ...(item.examples || []).map((e, i) => ({ tag: "예문 " + (i + 1), en: e.en, ko: e.ko, audio: e.audio }))];
+  const prev = idx > 0 ? `${base}/${idx - 1}` : null, next = idx < list.length - 1 ? `${base}/${idx + 1}` : null;
+
+  $app.innerHTML = topbar(grp.label, kind === "x" ? base : "#/basic") + `
+    <div class="card" id="head"></div>
+    <div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button role="tab" data-tab="${k}">${l}</button>`).join("")}</div>
+    <div class="card" id="body"></div>
+    <div class="row spread" id="foot"></div>
+    <div class="nav">${prev ? `<button onclick="location.hash='${prev}'">‹ 이전</button>` : "<span style='flex:1'></span>"}
+      ${next ? `<button class="primary" onclick="location.hash='${next}'">다음 ›</button>` : "<span style='flex:1'></span>"}</div>`;
+  const $ = (id) => document.getElementById(id);
+  const ctl = makeAudioCtl();
+  let run = 0, stream = null, recorder = null, tmpUrl = null, recTimer = null, recording = false;
+  const stopMic = () => { clearInterval(recTimer); stream?.getTracks().forEach((t) => t.stop()); stream = null; recording = false; };
+  const halt = () => { run++; ctl.stop(); };
+  cleanup = () => { halt(); stopMic(); if (tmpUrl) URL.revokeObjectURL(tmpUrl); };
+
+  const head = () => {
+    $("head").innerHTML = tab === "mix" ? `<b>섞어 말하기</b> <span class="muted">${esc(grp.label)} 패턴을 한글 뜻만 보고 말해 보세요</span>`
+      : `<div class="row spread"><span class="muted">${idx + 1} / ${list.length}</span>${mast?.mastered ? '<span class="ck">✔ 마스터</span>' : ""}</div>
+        <div class="pat">${esc(key(item))}</div><div>${esc(item.meaning)}</div>${item.when ? `<p class="muted">${esc(item.when)}</p>` : ""}`;
+  };
+  const foot = () => {
+    $("foot").innerHTML = tab === "mix" ? "" : `<button id="mastBtn" class="${mast?.mastered ? "sel" : ""}">${mast?.mastered ? "✔ 마스터함 (해제)" : "알았어요 (마스터 표시)"}</button>
+      <span class="muted">${mast?.reps || 0}회 연습</span>`;
+    const b = $("mastBtn");
+    if (b) b.onclick = async () => { mast = await bumpBasic(item.id, { mastered: !mast?.mastered }); head(); foot(); toast(mast.mastered ? "마스터로 표시했어요" : "표시를 해제했어요"); };
+  };
+  const setSpeed = (v) => { speed = v; db.setSetting("basicSpeed", v); };
+
+  /* ① 듣기 */
+  function tabListen() {
+    $("body").innerHTML = `<div class="row spread"><b>듣기</b>${speedSel(speed)}</div>` +
+      sents.map((s, i) => `<div class="sent"><button data-p="${i}" aria-label="재생">▶</button>
+        <div class="grow"><div class="tg">${esc(s.tag)}</div><div class="en">${esc(s.en)}</div><div class="muted">${esc(s.ko)}</div></div></div>`).join("");
+    $("body").querySelector(".spd").onchange = (e) => setSpeed(e.target.value);
+    $("body").querySelectorAll("[data-p]").forEach((b) => (b.onclick = async () => {
+      const my = ++run; const r = await ctl.play(sents[+b.dataset.p].audio, +speed);
+      if (my === run && !r.ok && !r.cancelled) toast("음원을 재생하지 못했습니다");
+    }));
+  }
+
+  /* ② 따라 말하기: 듣기 → 클립 길이만큼 무음 → 반복 */
+  function tabRepeat() {
+    let n = 3, sel = 0, tmpHtml = "";
+    const draw = () => {
+      $("body").innerHTML = `<div class="row spread"><b>따라 말하기</b>${speedSel(speed)}</div>
+        <p class="muted">문장을 고르고 시작하면 소리가 나온 뒤, 같은 길이의 빈 시간에 따라 말합니다.</p>
+        <div class="chips">${sents.map((s, i) => `<button class="chip ${i === sel ? "sel" : ""}" data-s="${i}">${esc(s.tag)}</button>`).join("")}</div>
+        <div class="sent-big"><div class="en">${esc(sents[sel].en)}</div><div class="muted">${esc(sents[sel].ko)}</div></div>
+        <div class="row"><span class="muted">반복</span><button data-n="3" class="${n === 3 ? "sel" : ""}">3회</button><button data-n="5" class="${n === 5 ? "sel" : ""}">5회</button>
+          <button class="primary grow" id="go">▶ 시작</button></div>
+        <div class="step" id="st" aria-live="polite">&nbsp;</div><div class="bar"><i id="pg" style="width:0"></i></div>
+        <div class="row spread" style="margin-top:8px"><button id="rec" class="rec">● 녹음 (선택)</button><span class="timer" id="rt">00:00</span></div><div id="mine">${tmpHtml}</div>`;
+      $("body").querySelector(".spd").onchange = (e) => setSpeed(e.target.value);
+      $("body").querySelectorAll("[data-s]").forEach((b) => (b.onclick = () => { halt(); sel = +b.dataset.s; draw(); }));
+      $("body").querySelectorAll("[data-n]").forEach((b) => (b.onclick = () => { n = +b.dataset.n; draw(); }));
+      $("go").onclick = go; bindRec(); bindMine();
+    };
+    const bindMine = () => { const p = document.getElementById("myPlay"); if (p) p.onclick = () => { ctl.stop(); new Audio(tmpUrl).play(); }; };
+    function bindRec() {
+      $("rec").onclick = async () => {
+        if (recording) {
+          clearInterval(recTimer); const r = await recorder.stop(); stopMic();
+          if (tmpUrl) URL.revokeObjectURL(tmpUrl); tmpUrl = URL.createObjectURL(r.blob);
+          tmpHtml = `<div class="rec-item"><span class="grow">내 녹음 (임시, 저장 안 됨) · ${fmtTime(r.durationSec)}</span><button id="myPlay">▶</button></div>`;
+          $("rec").textContent = "● 녹음 (선택)"; $("mine").innerHTML = tmpHtml; bindMine(); return;
+        }
+        try { stream = await getMic(); } catch (e) { return toast(e.message); }
+        recorder = startRecording(stream); recording = true; $("rec").textContent = "■ 정지";
+        const t0 = Date.now(); recTimer = setInterval(() => { const t = document.getElementById("rt"); if (t) t.textContent = fmtTime((Date.now() - t0) / 1000); }, 250);
+      };
+    }
+    async function go() {
+      if ($("go").dataset.on) { halt(); draw(); return; }
+      const my = ++run; ctl.stop(); $("go").dataset.on = 1; $("go").textContent = "■ 정지";
+      const s = sents[sel];
+      for (let i = 1; i <= n; i++) {
+        $("st").textContent = `${i}/${n} · 듣기`; $("pg").style.width = ((i - 1) / n) * 100 + "%";
+        const r = await ctl.play(s.audio, +speed); if (my !== run) return;
+        $("st").textContent = `${i}/${n} · 따라 말하세요`;
+        await ctl.sleep(Math.max(1200, (r.ok ? r.dur : 2) * 1000 + 300)); if (my !== run) return;
+      }
+      $("pg").style.width = "100%"; $("st").textContent = "완료!";
+      mast = await bumpBasic(item.id, { rep: true }); if (my !== run) return; head(); foot();
+      delete $("go").dataset.on; $("go").textContent = "▶ 다시 시작";
+    }
+    draw();
+  }
+
+  /* ③ 바꿔 말하기 (패턴 카드 전용) */
+  function tabSwap() {
+    let k = 0, shown = false;
+    const ex = () => item.examples || [];
+    const draw = () => {
+      if (!ex().length) { $("body").innerHTML = `<p class="muted">예문이 없습니다.</p>`; return; }
+      const e = ex()[k];
+      $("body").innerHTML = `<b>바꿔 말하기</b> <span class="muted">${k + 1}/${ex().length}</span>
+        <p class="muted">이 상황을 "${esc(key(item))}" 로 영어로 말해 보세요.</p>
+        <div class="sent-big"><div class="ko-big">${esc(e.ko)}</div>
+        <div id="ans" ${shown ? "" : "hidden"}><div class="en">${esc(e.en)}</div></div></div>
+        <div class="row"><button id="show" class="primary grow">${shown ? "▶ 다시 듣기" : "정답 예문 보기 + 듣기"}</button>
+        <button id="nx" class="grow">다음 상황 ›</button></div>`;
+      $("show").onclick = async () => { shown = true; $("ans").hidden = false; $("show").textContent = "▶ 다시 듣기"; const my = ++run; await ctl.play(e.audio, +speed); void my; };
+      $("nx").onclick = () => { halt(); k = (k + 1) % ex().length; shown = false; draw(); };
+    };
+    draw();
+  }
+
+  /* ④ 섞어 말하기 (카테고리 전체, 한글 뜻만 보고) */
+  function tabMix() {
+    let q = shuffle(list), i = 0, shown = false; const res = { ok: [], again: [] };
+    const draw = () => {
+      if (i >= q.length) {
+        $("body").innerHTML = `<b>요약</b><div class="report"><div><span class="big-n">${res.ok.length}</span> 알았어요</div><div><span class="big-n">${res.again.length}</span> 다시</div></div>` +
+          (res.again.length ? `<p class="muted">다시 볼 표현</p>${res.again.map((it) => `<div class="sent"><div class="grow"><b>${esc(key(it))}</b><div class="muted">${esc(it.meaning)}</div></div></div>`).join("")}` : `<p>모두 알고 있어요!</p>`) +
+          `<div class="row"><button id="rs" class="primary grow">다시 섞어서 시작</button></div>`;
+        $("rs").onclick = () => { q = shuffle(list); i = 0; shown = false; res.ok = []; res.again = []; draw(); };
+        return;
+      }
+      const it = q[i];
+      $("body").innerHTML = `<div class="row spread"><b>섞어 말하기</b><span class="muted">${i + 1}/${q.length}</span></div><div class="bar"><i style="width:${(i / q.length) * 100}%"></i></div>
+        <div class="sent-big"><div class="ko-big">${esc(it.meaning)}</div><p class="muted">이 뜻의 표현을 소리 내어 말해 보세요.</p>
+        <div id="ans" ${shown ? "" : "hidden"}><div class="en">${esc(key(it))}</div></div></div>
+        <div class="row"><button id="show" class="grow">${shown ? "▶ 다시 듣기" : "정답 보기 + 듣기"}</button></div>
+        <div class="row" style="margin-top:8px"><button id="again" class="grow">다시</button><button id="know" class="primary grow">알았어요</button></div>`;
+      $("show").onclick = async () => { shown = true; $("ans").hidden = false; $("show").textContent = "▶ 다시 듣기"; ++run; await ctl.play(it.audio, +speed); };
+      const adv = (okk) => { halt(); (okk ? res.ok : res.again).push(it); i++; shown = false; draw(); };
+      $("know").onclick = async () => { await bumpBasic(it.id, { mastered: true, rep: true }); if (it.id === item.id) mast = await db.getSetting(bKey(item.id), null); adv(true); };
+      $("again").onclick = async () => { await bumpBasic(it.id, { rep: true }); adv(false); };
+    };
+    draw();
+  }
+
+  const TAB_FN = { listen: tabListen, repeat: tabRepeat, swap: tabSwap, mix: tabMix };
+  function show(t) {
+    halt(); if (recording) { recorder?.stop(); stopMic(); }
+    tab = t;
+    $app.querySelectorAll("[data-tab]").forEach((b) => { const on = b.dataset.tab === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
+    head(); foot(); TAB_FN[t]();
+  }
+  $app.querySelectorAll("[data-tab]").forEach((b) => (b.onclick = () => show(b.dataset.tab)));
+  show(tab);
+}
+
+/* 필러 챌린지 */
+const SIL = { FLOOR: 0.012, MULT: 3, CAL_MS: 500, MIN_SIL_MS: 350, FRAME_MS: 25, GOAL_S: 45 };
+/** 침묵 분석기: AnalyserNode 로 ~25ms 마다 RMS 를 재고, 처음 0.5초의 하위 20% RMS×3(하한 0.012)을 임계값으로 사용.
+ *  임계값 아래가 0.35초 이상 이어진 구간만 "침묵"으로 계산한다(단어 사이 짧은 숨은 말한 것으로 본다). */
+function makeSilenceMeter(stream) {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AC();
+  const src = ctx.createMediaStreamSource(stream);
+  const an = ctx.createAnalyser(); an.fftSize = 1024; src.connect(an);
+  const buf = new Float32Array(an.fftSize);
+  const t0 = performance.now();
+  const cal = []; let thr = null, silStart = null, last = t0; const sils = [];
+  const id = setInterval(() => {
+    const now = performance.now(); an.getFloatTimeDomainData(buf);
+    let sum = 0; for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+    const rms = Math.sqrt(sum / buf.length); last = now;
+    if (thr === null) {
+      cal.push(rms);
+      if (now - t0 >= SIL.CAL_MS) { cal.sort((a, b) => a - b); thr = Math.max(SIL.FLOOR, cal[Math.floor(cal.length * 0.2)] * SIL.MULT); silStart = null; }
+      return;
+    }
+    if (rms < thr) { if (silStart === null) silStart = now; }
+    else if (silStart !== null) { sils.push((now - silStart) / 1000); silStart = null; }
+  }, SIL.FRAME_MS);
+  if (ctx.state === "suspended") ctx.resume().catch(() => {});
+  return {
+    stop() {
+      clearInterval(id); const now = performance.now();
+      if (silStart !== null) sils.push((now - silStart) / 1000);
+      ctx.close().catch(() => {});
+      const total = (now - t0) / 1000, ana = Math.max(0.001, total - SIL.CAL_MS / 1000);
+      const real = sils.filter((d) => d >= SIL.MIN_SIL_MS / 1000);
+      const silTotal = real.reduce((a, b) => a + b, 0);
+      return { total, threshold: thr, longest: real.length ? Math.max(...real) : 0, long2: real.filter((d) => d >= 2).length,
+        ratio: Math.max(0, Math.min(1, 1 - silTotal / ana)) };
+    },
+    abort() { clearInterval(id); ctx.close().catch(() => {}); },
+  };
+}
+
+async function viewBasicChain() {
+  const B = await needBasics("필러 챌린지"); if (!B) return;
+  const chain = B.chain || {};
+  const surveyIds = new Set((DATA.themes || []).filter((t) => t.kind === "survey").map((t) => t.id));
+  let pool = allQuestions().filter((x) => surveyIds.has(x.g.theme));
+  if (!pool.length) pool = allQuestions();
+  let cur = pool[Math.floor(Math.random() * pool.length)];
+  const ctl = makeAudioCtl();
+  let stream = null, recorder = null, meter = null, timerId = null, cdId = null, tmpUrl = null, run = 0, myAudio = null;
+  const stopMic = () => { stream?.getTracks().forEach((t) => t.stop()); stream = null; };
+  cleanup = () => {
+    run++; ctl.stop(); clearInterval(timerId); clearInterval(cdId); meter?.abort(); meter = null; stopMic();
+    myAudio?.pause(); if (tmpUrl) URL.revokeObjectURL(tmpUrl);
+  };
+  const $ = (id) => document.getElementById(id);
+  const chips = (label, arr, cls) => (arr && arr.length ? `<div class="chips"><span class="chip-label wide">${label}</span>${arr.map((w) => `<button class="chip ${cls}" data-hl>${esc(w)}</button>`).join("")}</div>` : "");
+  const bindChips = () => $app.querySelectorAll("[data-hl]").forEach((b) => (b.onclick = () => b.classList.toggle("hl")));
+
+  function intro() {
+    run++; ctl.stop(); clearInterval(timerId); clearInterval(cdId);
+    $app.innerHTML = topbar("필러 챌린지", "#/basic") + `
+      <div class="card"><div class="row spread"><b>질문</b><button id="qp">▶ 질문 듣기</button></div><p class="qtext">${esc(cur.q.text)}</p></div>
+      <div class="card"><b>필러 칩</b> <span class="muted">탭하면 표시되고, 말할 때 소리 내어 써 보세요.</span>
+        ${chips("시작", chain.starters, "verb")}${chips("이음", chain.connectors, "noun")}${chips("마무리", chain.closers, "kp")}${chips("막힐 때", chain.rescue, "rescue")}</div>
+      <p class="muted">${SIL.GOAL_S}초 동안 끊기지 않고 이어 말해 보세요. 마이크 권한이 필요합니다. 녹음은 저장되지 않습니다.</p>
+      <button class="primary big" id="go">시작 (3-2-1)</button>
+      <div class="row" style="margin-top:8px"><button id="other" class="grow">다른 질문</button></div>`;
+    bindChips();
+    $("qp").onclick = () => { ctl.play(cur.q.qAudio, 1); };
+    $("other").onclick = () => { if (pool.length > 1) { let n; do { n = pool[Math.floor(Math.random() * pool.length)]; } while (n === cur); cur = n; } intro(); };
+    $("go").onclick = begin;
+  }
+  async function begin() {
+    ctl.stop();
+    try { stream = await getMic(); } catch (e) { return toast(e.message); }
+    const my = ++run; let n = 3;
+    $app.innerHTML = topbar("필러 챌린지", "#/basic") + `<div class="stage"><p class="qtext">${esc(cur.q.text)}</p><div class="count" id="cd">3</div><p class="muted">곧 녹음이 시작됩니다</p></div>`;
+    cdId = setInterval(() => {
+      n--; if (my !== run) return clearInterval(cdId);
+      if (n <= 0) { clearInterval(cdId); return record(my); }
+      $("cd").textContent = n;
+    }, 1000);
+  }
+  function record(my) {
+    if (my !== run || !stream) return;
+    let m;
+    try { m = makeSilenceMeter(stream); } catch (e) { m = null; }
+    meter = m; recorder = startRecording(stream);
+    const t0 = Date.now();
+    $app.innerHTML = topbar("필러 챌린지", "#/basic") + `<div class="stage"><p class="qtext">${esc(cur.q.text)}</p>
+      <p><span class="dot"></span>녹음 중</p><div class="timer" id="t">00:00</div><p class="muted">목표 ${SIL.GOAL_S}초 · 말이 막히면 필러로 이어 가세요</p>
+      <div class="bar"><i id="pg" style="width:0"></i></div><button class="rec big" id="end">끝내기</button></div>
+      <div class="card">${chips("시작", chain.starters, "verb")}${chips("이음", chain.connectors, "noun")}${chips("막힐 때", chain.rescue, "rescue")}</div>`;
+    bindChips();
+    let done = false;
+    const finish = async () => {
+      if (done) return; done = true; clearInterval(timerId);
+      const stats = meter ? meter.stop() : null; meter = null;
+      const r = await recorder.stop(); stopMic();
+      if (my === run) report(stats, r);
+    };
+    timerId = setInterval(() => {
+      const s = (Date.now() - t0) / 1000; const t = $("t"); if (t) t.textContent = fmtTime(s);
+      const pg = $("pg"); if (pg) pg.style.width = Math.min(100, (s / SIL.GOAL_S) * 100) + "%";
+      if (s >= SIL.GOAL_S) finish();
+    }, 250);
+    $("end").onclick = finish;
+  }
+  function report(st, r) {
+    if (tmpUrl) URL.revokeObjectURL(tmpUrl); tmpUrl = URL.createObjectURL(r.blob);
+    let body;
+    if (!st) body = `<p class="muted">이 브라우저에서는 침묵 측정을 지원하지 않습니다. 녹음 시간 ${fmtTime(r.durationSec)}</p>`;
+    else {
+      const pct = Math.round(st.ratio * 100);
+      let msg, rescue = false;
+      if (st.longest >= 3) { msg = "막힐 땐 rescue 표현을 쓰세요. 말을 멈추기 전에 한마디 먼저 꺼내는 연습을 해 보세요."; rescue = true; }
+      else if (st.longest >= 2) { msg = "조금 끊겼어요. 시작·이음 필러로 다음 말을 준비해 보세요."; }
+      else if (pct < 60) { msg = "침묵이 길진 않지만 말한 비율이 낮아요. 문장을 조금 더 이어 보세요."; }
+      else msg = "끊김 없이 잘 이어 갔어요!";
+      body = `<div class="report"><div><span class="big-n">${fmtTime(st.total)}</span>총 시간</div><div><span class="big-n">${pct}%</span>말한 비율</div>
+        <div><span class="big-n">${st.longest.toFixed(1)}초</span>최장 침묵</div><div><span class="big-n">${st.long2}회</span>2초 이상 침묵</div></div>
+        <p class="msg ${st.longest >= 3 ? "bad" : st.longest >= 2 ? "warn" : "good"}">${esc(msg)}</p>${rescue ? chips("막힐 때", chain.rescue, "rescue") : ""}`;
+    }
+    $app.innerHTML = topbar("챌린지 결과", "#/basic") + `<div class="card">${body}</div>
+      <div class="card"><b>내 녹음</b> <span class="muted">(임시, 저장 안 됨)</span><div class="row" style="margin-top:8px"><button id="mp">▶ 내 녹음 듣기</button>
+        ${cur.q.aAudio ? `<button id="ap">🔊 모델 답변 듣기</button>` : ""}</div></div>
+      <div class="row"><button id="again" class="primary grow">다시 도전</button><button id="other" class="grow">다른 질문</button></div>`;
+    bindChips();
+    $("mp").onclick = () => { ctl.stop(); myAudio?.pause(); myAudio = new Audio(tmpUrl); myAudio.play(); };
+    const ap = $("ap"); if (ap) ap.onclick = () => { myAudio?.pause(); ctl.play(cur.q.aAudio, 0.9); };
+    $("again").onclick = () => { myAudio?.pause(); intro(); };
+    $("other").onclick = () => { myAudio?.pause(); if (pool.length > 1) { let n; do { n = pool[Math.floor(Math.random() * pool.length)]; } while (n === cur); cur = n; } intro(); };
+  }
+  intro();
 }
 
 /* ---------- 시작 ---------- */
