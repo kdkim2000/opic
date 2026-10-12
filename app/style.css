@@ -173,3 +173,5 @@ input[type=range] { width: 100%; }
 .sv-count input { width: 5rem; min-height: 44px; font: inherit; border-radius: 12px; border: 1px solid var(--line);
   background: var(--card); color: var(--text); padding: 0 8px; }
 .sv-sumwarn { margin: 8px 0; }
+.off-banner { position: sticky; top: 0; z-index: 20; background: var(--warn); color: #fff; text-align: center;
+  font-size: .85rem; padding: 4px 8px; }

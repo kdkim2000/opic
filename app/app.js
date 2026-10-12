@@ -119,6 +119,7 @@ function route() {
   if (parts[0] === "practice") return viewPractice(+parts[1], +parts[2], params);
   if (parts[0] === "exam") return viewExam(+parts[1]);
   if (parts[0] === "hard") return viewHard();
+  if (parts[0] === "offline") return viewOffline();
   if (parts[0] === "basic") {
     if (parts[1] === "x" && parts[2]) {
       const cat = decodeURIComponent(parts[2]);
@@ -174,7 +175,9 @@ async function viewHome() {
     `<a class="card drill-entry" href="#/basic"><b>기초 모드 — 기본 표현·필러 연습</b>
     <p class="muted">자주 쓰는 표현을 묶어서 반복하고, 필러로 말이 끊기지 않게 이어 가는 연습을 해 보세요.</p></a>` +
     `<a class="card drill-entry" href="#/survey"><b>Survey 모드 — Background Survey 선택 연습</b>
-    <p class="muted">실제 설문 화면처럼 직업·거주·여가·취미·운동·휴가 항목을 골라 보는 연습입니다.</p></a>` + section("최신 문제 (opic16~30)", "latest", false) +
+    <p class="muted">실제 설문 화면처럼 직업·거주·여가·취미·운동·휴가 항목을 골라 보는 연습입니다.</p></a>` +
+    `<a class="card drill-entry" href="#/offline"><b>오프라인 음원 — 미리 받아 두기</b>
+    <p class="muted">음원을 기기에 저장해 두면 네트워크가 끊겨도 학습할 수 있습니다.</p></a>` + section("최신 문제 (opic16~30)", "latest", false) +
     section("이전 문제 (opic1~8)", "legacy", true) + `<div class="card"><a class="btn" href="#/hard">어려움 문항 모아 연습 (${hardCount})</a>
     <p class="muted">녹음과 학습 기록은 이 기기 안에만 저장됩니다. 브라우저 데이터를 지우면 함께 삭제됩니다.</p></div>`;
 }
@@ -1268,6 +1271,133 @@ async function viewSurveyEdit() {
   draw();
 }
 
+/* ---------- 오프라인 음원 ----------
+   받은 음원은 Cache Storage(AUDIO_CACHE)에 저장되고, sw.js 가 /audio/ 요청을 여기서 꺼내 응답한다. */
+const AUDIO_CACHE = "opic-audio-v1";
+const absUrl = (p) => new URL(p, location.href).href;
+
+/** 다운로드 단위: 질문+답변 세트별, 기초, 전체 */
+async function audioUnits() {
+  const units = DATA.sets.map((s) => ({
+    id: "opic" + s.id, label: `opic${s.id} (질문·모델 답변)`,
+    urls: s.groups.flatMap((g) => g.questions.flatMap((q) => [q.qAudio, q.aAudio])).filter(Boolean),
+  }));
+  try {
+    const b = await loadBasics();
+    const items = [...b.categories, ...b.fillerGroups].flatMap((c) => c.items);
+    const urls = items.flatMap((i) => [i.audio, ...(i.examples || []).map((e) => e.audio)]).filter(Boolean);
+    if (urls.length) units.push({ id: "basics", label: "기초 모드 (표현·필러)", urls });
+  } catch (e) { /* basics 미배포 또는 오프라인 미캐시: 기초 단위만 생략 */ }
+  for (const u of units) u.urls = [...new Set(u.urls)].map(absUrl);
+  return units;
+}
+async function cachedUrls() {
+  if (!("caches" in window)) return new Set();
+  const c = await caches.open(AUDIO_CACHE);
+  return new Set((await c.keys()).map((r) => r.url));
+}
+/** 아직 없는 URL 만 받는다(이어받기). 동시 4개. 반환: 실패 수 */
+async function downloadUrls(urls, onStep, signal) {
+  const c = await caches.open(AUDIO_CACHE);
+  const have = await cachedUrls();
+  const todo = urls.filter((u) => !have.has(u));
+  let i = 0, failed = 0;
+  const worker = async () => {
+    while (i < todo.length && !signal.aborted) {
+      const u = todo[i++];
+      try {
+        const r = await fetch(u, { signal, cache: "no-cache" });
+        if (!r.ok || r.status !== 200) throw new Error(r.status);
+        await c.put(u, r);
+      } catch (e) { if (signal.aborted) return; failed++; }
+      onStep();
+    }
+  };
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  return failed;
+}
+const fmtMB = (n) => (n >= 1073741824 ? (n / 1073741824).toFixed(1) + "GB" : Math.round(n / 1048576) + "MB");
+
+async function viewOffline() {
+  if (!("caches" in window) || !("serviceWorker" in navigator)) {
+    $app.innerHTML = topbar("오프라인 음원") + `<p class="muted">이 브라우저는 오프라인 저장을 지원하지 않습니다. (HTTPS 또는 localhost 에서 열어 주세요)</p>`;
+    return;
+  }
+  const units = await audioUnits();
+  const all = { id: "all", label: "전체", urls: [...new Set(units.flatMap((u) => u.urls))] };
+  const rows = [all, ...units];
+  let busy = null; // 진행 중인 AbortController
+  let alive = true;
+  const onClick = (e) => click(e);
+  const onOnline = () => { if (!busy) draw(); };
+  cleanup = () => { alive = false; busy?.abort(); $app.removeEventListener("click", onClick); window.removeEventListener("online", onOnline); };
+
+  async function draw(progress) {
+    if (!alive) return;
+    const have = await cachedUrls();
+    let usage = "";
+    try {
+      const est = await navigator.storage?.estimate?.();
+      if (est?.quota) usage = `사용 ${fmtMB(est.usage)} / 여유 한도 약 ${fmtMB(est.quota)}`;
+    } catch (e) { /* noop */ }
+    const online = navigator.onLine;
+    $app.innerHTML = topbar("오프라인 음원") +
+      `<p class="muted">받아 둔 음원은 이 기기에만 저장되며, 네트워크가 끊겨도 재생됩니다. 전체는 약 100MB 이상이므로 Wi-Fi 에서 받는 것을 권장합니다.</p>
+       ${usage ? `<p class="muted">${esc(usage)}</p>` : ""}
+       ${online ? "" : `<p class="sv-warn">오프라인 상태 — 새로 받을 수 없습니다.</p>`}` +
+      rows.map((u) => {
+        const n = u.urls.filter((x) => have.has(x)).length, tot = u.urls.length;
+        const p = progress && progress.id === u.id ? progress : null;
+        const pct = tot ? (n / tot) * 100 : 0;
+        return `<div class="card"><div class="row spread"><b>${esc(u.label)}</b><span class="muted">${n}/${tot}${n === tot && tot ? " ✅" : ""}</span></div>
+          <div class="bar"><i style="width:${pct}%"></i></div>
+          <div class="row">${busy ? (p ? `<button data-stop>중단</button>` : "")
+            : `<button class="primary" data-dl="${u.id}" ${online && n < tot ? "" : "disabled"}>${n && n < tot ? "이어서 받기" : "받기"}</button>
+               <button data-rm="${u.id}" ${n ? "" : "disabled"}>삭제</button>`}</div></div>`;
+      }).join("");
+  }
+
+  async function click(e) {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.hasAttribute("data-stop")) { busy?.abort(); return; }
+    const dl = b.dataset.dl, rm = b.dataset.rm;
+    const unit = rows.find((u) => u.id === (dl || rm));
+    if (!unit) return;
+    if (rm) {
+      if (!confirm(`'${unit.label}' 음원을 이 기기에서 삭제할까요?`)) return;
+      const c = await caches.open(AUDIO_CACHE);
+      await Promise.all(unit.urls.map((u) => c.delete(u)));
+      toast("삭제했습니다"); return draw();
+    }
+    if (unit.id === "all" && !confirm("전체 음원(약 100MB 이상)을 받습니다. 모바일 데이터라면 Wi-Fi 에서 받는 것을 권장합니다. 계속할까요?")) return;
+    busy = new AbortController();
+    let done = 0;
+    const have = await cachedUrls();
+    const todo = unit.urls.filter((u) => !have.has(u)).length;
+    const tick = () => { done++; if (done % 5 === 0 || done === todo) draw({ id: unit.id }); };
+    draw({ id: unit.id });
+    const failed = await downloadUrls(unit.urls, tick, busy.signal);
+    const aborted = busy.signal.aborted;
+    busy = null;
+    try { await navigator.storage?.persist?.(); } catch (er) { /* noop */ }
+    toast(aborted ? "중단했습니다. 다시 누르면 이어서 받습니다" : failed ? `${failed}개를 받지 못했습니다. 다시 시도해 주세요` : "다운로드를 완료했습니다");
+    draw();
+  }
+  $app.addEventListener("click", onClick);
+  window.addEventListener("online", onOnline);
+  await draw();
+}
+
+/* 오프라인 배너 */
+function syncOfflineBanner() {
+  let el = document.getElementById("offBanner");
+  if (navigator.onLine) return el?.remove();
+  if (!el) { el = document.createElement("div"); el.id = "offBanner"; el.className = "off-banner"; document.body.prepend(el); }
+  el.textContent = "오프라인 — 받아 둔 음원만 재생됩니다";
+}
+window.addEventListener("online", syncOfflineBanner);
+window.addEventListener("offline", syncOfflineBanner);
+
 /* ---------- 시작 ---------- */
 (async function init() {
   try {
@@ -1278,5 +1408,6 @@ async function viewSurveyEdit() {
     return;
   }
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  syncOfflineBanner();
   route();
 })();
