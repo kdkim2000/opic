@@ -175,3 +175,9 @@ input[type=range] { width: 100%; }
 .sv-sumwarn { margin: 8px 0; }
 .off-banner { position: sticky; top: 0; z-index: 20; background: var(--warn); color: #fff; text-align: center;
   font-size: .85rem; padding: 4px 8px; }
+.ls-now h2 { margin: 4px 0; }
+.ls-now p { font-size: 1.05rem; }
+.ls-ctl { display: flex; gap: 12px; margin: 12px 0; }
+.ls-ctl button { flex: 1; min-height: 72px; font-size: 1.8rem; }
+.ls-ctl button.primary { flex: 2; }
+.card select { min-height: 40px; font: inherit; }

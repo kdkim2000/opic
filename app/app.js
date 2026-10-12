@@ -120,6 +120,7 @@ function route() {
   if (parts[0] === "exam") return viewExam(+parts[1]);
   if (parts[0] === "hard") return viewHard();
   if (parts[0] === "offline") return viewOffline();
+  if (parts[0] === "listen") return parts[2] ? viewListenPlayer(parts[1], parts[2], params) : viewListenHome();
   if (parts[0] === "basic") {
     if (parts[1] === "x" && parts[2]) {
       const cat = decodeURIComponent(parts[2]);
@@ -176,6 +177,8 @@ async function viewHome() {
     <p class="muted">자주 쓰는 표현을 묶어서 반복하고, 필러로 말이 끊기지 않게 이어 가는 연습을 해 보세요.</p></a>` +
     `<a class="card drill-entry" href="#/survey"><b>Survey 모드 — Background Survey 선택 연습</b>
     <p class="muted">실제 설문 화면처럼 직업·거주·여가·취미·운동·휴가 항목을 골라 보는 연습입니다.</p></a>` +
+    `<a class="card drill-entry" href="#/listen"><b>연속듣기 모드 — 질문과 모델 답변 이어 듣기</b>
+    <p class="muted">화면을 보지 않고 질문→답변을 자동으로 이어서 듣습니다. 이동 중에 좋습니다. 받아 둔 음원은 오프라인에서도 재생됩니다.</p></a>` +
     `<a class="card drill-entry" href="#/offline"><b>오프라인 음원 — 미리 받아 두기</b>
     <p class="muted">음원을 기기에 저장해 두면 네트워크가 끊겨도 학습할 수 있습니다.</p></a>` + section("최신 문제 (opic16~30)", "latest", false) +
     section("이전 문제 (opic1~8)", "legacy", true) + `<div class="card"><a class="btn" href="#/hard">어려움 문항 모아 연습 (${hardCount})</a>
@@ -1397,6 +1400,184 @@ function syncOfflineBanner() {
 }
 window.addEventListener("online", syncOfflineBanner);
 window.addEventListener("offline", syncOfflineBanner);
+
+/* ---------- 연속듣기 ----------
+   질문 → (무음 간격) → 모델 답변 → 다음 문항을 하나의 <audio> 요소로 이어 재생한다.
+   - 트랙마다 new Audio() 를 만들면 화면이 꺼진 뒤 다음 재생이 막힐 수 있어 요소 하나의 src 만 바꾼다.
+   - 간격은 타이머가 아니라 1초짜리 무음 트랙으로 채운다(무음 구간에서 백그라운드 재생이 끊기는 것을 방지).
+   - 음원 URL 은 평범한 audio/... 이므로 받아 둔 파일은 sw.js 가 캐시에서 응답한다(오프라인 동작). */
+let silenceUrl = null;
+function silentWav() {
+  if (silenceUrl) return silenceUrl;
+  const n = 8000, b = new DataView(new ArrayBuffer(44 + n));
+  const w = (o, t) => [...t].forEach((c, i) => b.setUint8(o + i, c.charCodeAt(0)));
+  w(0, "RIFF"); b.setUint32(4, 36 + n, true); w(8, "WAVEfmt "); b.setUint32(16, 16, true); b.setUint16(20, 1, true); b.setUint16(22, 1, true);
+  b.setUint32(24, 8000, true); b.setUint32(28, 8000, true); b.setUint16(32, 1, true); b.setUint16(34, 8, true); w(36, "data"); b.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) b.setUint8(44 + i, 128);
+  return (silenceUrl = URL.createObjectURL(new Blob([b.buffer], { type: "audio/wav" })));
+}
+
+/** kind: "set" | "theme", raw: 경로 조각 그대로 → { title, items } */
+function listenItems(kind, raw) {
+  if (kind === "set") {
+    const set = DATA.sets.find((x) => x.id === +raw);
+    return set ? { title: `opic${set.id}`, items: set.groups.flatMap((g) => g.questions.map((q) => ({ s: set.id, g, q }))) } : null;
+  }
+  if (kind === "theme") {
+    const id = decodeURIComponent(raw), t = (DATA.themes || []).find((x) => x.id === id);
+    return t ? { title: t.label, items: themeQueue(id) } : null;
+  }
+  return null;
+}
+
+async function viewListenHome() {
+  const have = await cachedUrls();
+  const pctOf = (xs) => {
+    const urls = xs.flatMap((x) => [x.q.qAudio, x.q.aAudio]).filter(Boolean).map(absUrl);
+    return urls.length ? Math.round((urls.filter((u) => have.has(u)).length / urls.length) * 100) : 0;
+  };
+  const last = await db.getSetting("listen:last", null);
+  let resume = "";
+  if (last) {
+    const [k, ...r] = last.scope.split("/"), found = listenItems(k, r.join("/"));
+    if (found) resume = `<a class="btn primary big" href="#/listen/${last.scope}?from=${encodeURIComponent(last.key)}">▶ 이어서 듣기 — ${esc(found.title)} (${esc(last.key.replace(":", "-Q"))})</a>`;
+  }
+  const seriesOf = (s) => s.series || (s.id >= 16 ? "latest" : "legacy");
+  const setCard = (s) => {
+    const xs = listenItems("set", s.id).items, pct = pctOf(xs);
+    return `<a class="card theme-card" href="#/listen/set/${s.id}"><div class="row spread"><b>opic${s.id}</b><span class="muted">문항 ${xs.length}개 · 받음 ${pct}%</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div></a>`;
+  };
+  const themes = (DATA.themes || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const themeCard = (t) => {
+    const xs = themeQueue(t.id);
+    return `<a class="card theme-card" href="#/listen/theme/${encodeURIComponent(t.id)}"><div class="row spread"><b>${esc(t.label)}</b><span class="muted">문항 ${xs.length}개 · 받음 ${pctOf(xs)}%</span></div></a>`;
+  };
+  const latest = DATA.sets.filter((s) => seriesOf(s) === "latest"), legacy = DATA.sets.filter((s) => seriesOf(s) === "legacy");
+  $app.innerHTML = topbar("연속듣기 모드") + resume +
+    `<p class="muted">질문 → 모델 답변을 자동으로 이어서 듣습니다. 오프라인에서는 받아 둔 음원만 재생됩니다. <a href="#/offline">오프라인 음원 받기</a></p>` +
+    (latest.length ? `<h2>최신 문제 (세트별)</h2>${latest.map(setCard).join("")}` : "") +
+    (legacy.length ? `<details class="series"><summary><span class="sec-title">이전 문제 (세트별)</span></summary>${legacy.map(setCard).join("")}</details>` : "") +
+    (themes.length ? `<h2>주제별</h2>${themes.map(themeCard).join("")}` : "");
+}
+
+async function viewListenPlayer(kind, raw, params) {
+  const found = listenItems(kind, raw);
+  if (!found || !found.items.length) return (location.hash = "#/listen");
+  const { title } = found;
+  let items = found.items;
+  const offline = !navigator.onLine;
+  const have = await cachedUrls();
+  if (offline) items = items.filter((x) => have.has(absUrl(x.q.qAudio)));
+  const skipped = found.items.length - items.length;
+  if (!items.length) {
+    $app.innerHTML = topbar(title, "#/listen") + `<p class="muted">오프라인이며 받아 둔 음원이 없습니다. 네트워크가 연결됐을 때 <a href="#/offline">오프라인 음원 받기</a>에서 먼저 받아 주세요.</p>`;
+    return;
+  }
+  const scope = `${kind}/${raw}`;
+  let speed = await db.getSetting("speed", "0.9");
+  let gap = +(await db.getSetting("listen:gap", 2)), repeat = +(await db.getSetting("listen:repeat", 1));
+  const fromKey = params.get("from");
+  let pos = Math.max(0, items.findIndex((x) => keyOf(x.s, x.q.no) === fromKey));
+  let tr = [], k = 0, started = false, errs = 0, alive = true;
+  const au = new Audio();
+  au.preload = "auto";
+
+  const tracksFor = (x) => {
+    const out = [], g = () => { for (let i = 0; i < gap; i++) out.push({ kind: "gap", url: silentWav() }); };
+    const a = x.q.aAudio && (!offline || have.has(absUrl(x.q.aAudio))) ? x.q.aAudio : null;
+    for (let r = 0; r < repeat; r++) {
+      out.push({ kind: "q", url: x.q.qAudio });
+      if (a) { g(); out.push({ kind: "a", url: a }); }
+      g();
+    }
+    return out;
+  };
+
+  const ms = "mediaSession" in navigator ? navigator.mediaSession : null;
+  const setMeta = (t) => {
+    if (!ms || t.kind === "gap") return;
+    const x = items[pos];
+    try {
+      ms.metadata = new MediaMetadata({ title: `opic${x.s} Q${x.q.no} · ${t.kind === "q" ? "질문" : "모델 답변"}`, artist: "OPIc 연속듣기", album: title,
+        artwork: [{ src: "icons/icon-192.png", sizes: "192x192", type: "image/png" }] });
+    } catch (e) { /* noop */ }
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const paint = (phase) => {
+    const x = items[pos];
+    $("lsPos").textContent = `${pos + 1} / ${items.length}`;
+    $("lsNo").textContent = `opic${x.s} · Q${x.q.no}`;
+    $("lsText").textContent = x.q.text;
+    $("lsBar").style.width = `${((pos + 1) / items.length) * 100}%`;
+    $("lsPhase").textContent = phase || "";
+    $("lsPlay").textContent = au.paused ? "▶" : "⏸";
+    $("lsPlay").setAttribute("aria-label", au.paused ? "재생" : "일시정지");
+  };
+
+  const finish = () => { au.pause(); started = false; pos = 0; paint("끝까지 들었습니다 🎉 ▶ 를 누르면 처음부터 다시 듣습니다"); };
+  const playTrack = () => {
+    const t = tr[k];
+    au.src = t.url;
+    au.defaultPlaybackRate = au.playbackRate = t.kind === "a" ? +speed : 1;
+    setMeta(t);
+    paint(t.kind === "q" ? "질문" : t.kind === "a" ? "모델 답변" : "…");
+    au.play().catch((e) => { if (e?.name !== "AbortError") paint("재생 버튼을 눌러 주세요"); });
+  };
+  const loadItem = (p) => {
+    pos = p; tr = tracksFor(items[pos]); k = 0;
+    db.setSetting("listen:last", { scope, key: keyOf(items[pos].s, items[pos].q.no) }).catch(() => {});
+    playTrack();
+  };
+  const nextItem = () => (pos + 1 < items.length ? loadItem(pos + 1) : finish());
+  const nextTrack = () => (k + 1 < tr.length ? (k++, playTrack()) : nextItem());
+  au.onended = () => { errs = 0; nextTrack(); };
+  au.onerror = () => {
+    if (!alive || !au.getAttribute("src")) return;
+    if (++errs >= 5) { au.pause(); toast("음원을 연속해서 불러오지 못해 멈췄습니다"); paint("멈춤"); return; }
+    tr[k].kind === "q" ? nextItem() : nextTrack(); // 받지 않은 음원은 건너뛰고 계속
+  };
+  au.onplay = () => { $("lsPlay").textContent = "⏸"; if (ms) ms.playbackState = "playing"; };
+  au.onpause = () => { if (alive) $("lsPlay").textContent = "▶"; if (ms) ms.playbackState = "paused"; };
+
+  const go = (p) => {
+    p = Math.min(items.length - 1, Math.max(0, p));
+    if (started) loadItem(p); else { pos = p; paint(""); }
+  };
+  const toggle = () => {
+    if (!started) { started = true; loadItem(pos); return; }
+    au.paused ? au.play().catch(() => {}) : au.pause();
+  };
+  const prev = () => (started && (k > 0 || au.currentTime > 3) ? loadItem(pos) : go(pos - 1));
+  const next = () => go(pos + 1);
+
+  $app.innerHTML = topbar(title, "#/listen") +
+    `<div class="card ls-now"><div class="muted" id="lsPos"></div><h2 id="lsNo"></h2><p id="lsText"></p>
+      <div class="bar"><i id="lsBar"></i></div><p class="muted" id="lsPhase"></p></div>
+     <div class="ls-ctl"><button id="lsPrev" aria-label="이전 문항">⏮</button><button class="primary" id="lsPlay"></button><button id="lsNext" aria-label="다음 문항">⏭</button></div>
+     <div class="card"><div class="row spread"><label>배속(답변) <select id="lsSpd">${SPEEDS.map((v) => `<option value="${v}" ${v === speed ? "selected" : ""}>${v}x</option>`).join("")}</select></label>
+       <label>간격 <select id="lsGap">${[1, 2, 4].map((v) => `<option value="${v}" ${v === gap ? "selected" : ""}>${v}초</option>`).join("")}</select></label>
+       <label>반복 <select id="lsRep">${[1, 2].map((v) => `<option value="${v}" ${v === repeat ? "selected" : ""}>${v}회</option>`).join("")}</select></label></div>
+       <p class="muted">간격·반복은 다음 문항부터 적용됩니다. 화면을 꺼도 계속 재생됩니다(잠금화면에서 이전/다음 조작 가능).</p>
+       ${skipped ? `<p class="muted">오프라인이라 받지 않은 ${skipped}개 문항은 제외했습니다.</p>` : ""}</div>`;
+  paint("");
+  $("lsPlay").onclick = toggle; $("lsPrev").onclick = prev; $("lsNext").onclick = next;
+  $("lsSpd").onchange = (e) => { speed = e.target.value; db.setSetting("speed", speed); if (started && tr[k]?.kind === "a") au.playbackRate = +speed; };
+  $("lsGap").onchange = (e) => { gap = +e.target.value; db.setSetting("listen:gap", gap); };
+  $("lsRep").onchange = (e) => { repeat = +e.target.value; db.setSetting("listen:repeat", repeat); };
+
+  if (ms) {
+    const set = (a, f) => { try { ms.setActionHandler(a, f); } catch (e) { /* 미지원 액션 */ } };
+    set("play", () => (started ? au.play() : toggle())); set("pause", () => au.pause());
+    set("previoustrack", prev); set("nexttrack", next);
+  }
+  cleanup = () => {
+    alive = false; au.onended = au.onerror = au.onplay = au.onpause = null;
+    au.pause(); au.removeAttribute("src"); au.load();
+    if (ms) { ["play", "pause", "previoustrack", "nexttrack"].forEach((a) => { try { ms.setActionHandler(a, null); } catch (e) { /* noop */ } }); ms.metadata = null; }
+  };
+}
 
 /* ---------- 시작 ---------- */
 (async function init() {

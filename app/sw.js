@@ -1,5 +1,5 @@
 // 앱 셸은 네트워크 우선으로 캐시하고, 음원(/audio/)은 사용자가 '오프라인 음원' 화면에서 받아 둔 것만 캐시에서 꺼내 쓴다.
-const CACHE = "opic-shell-v6";
+const CACHE = "opic-shell-v7";
 const AUDIO_CACHE = "opic-audio-v1"; // 셸 버전을 올려도 지워지지 않는다(activate 에서 opic-audio- 는 보존)
 const SHELL = ["./", "index.html", "app.js", "style.css", "manifest.webmanifest", "icons/icon-192.png"];
 
